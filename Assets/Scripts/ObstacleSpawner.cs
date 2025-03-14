@@ -1,41 +1,29 @@
 using UnityEngine;
+using System.Collections.Generic;
+using Random = UnityEngine.Random;
 
 public class ObstacleSpawner : MonoBehaviour
 {
     public GameObject obstaclePrefab;
-    public Transform platform;
-    public int minObstacles = 5;
-    public int maxObstacles = 10;
 
-    public Vector3 spawnAreaMin;   
-    public Vector3 spawnAreaMax;
-
-    void Start()
+    public void SpawnObstacles(GameObject platform, List<GameObject> obstaclesList)
     {
-        SpawnObstacles();
-    }
-
-    void SpawnObstacles()
-    {
-        int obstacleCount = Random.Range(minObstacles, maxObstacles);
-
+        int obstacleCount = Random.Range(5, 10);
         float platformHeight = platform.GetComponent<Collider>().bounds.extents.y;
+
+        float spawnAreaMinZ = platform.transform.position.z - 100f;
+        float spawnAreaMaxZ = platform.transform.position.z + 100f;
 
         for (int i = 0; i < obstacleCount; i++)
         {
-            // Platform üzerinde rastgele bir pozisyon
-            float randomX = Random.Range(spawnAreaMin.x, spawnAreaMax.x);
-            float randomZ = Random.Range(spawnAreaMin.z, spawnAreaMax.z);
-
-            float randomY = platform.position.y + platformHeight + 1f; // Platformdan yükseklik
-
-            // Şerit pozisyonunu almak için LaneManager kullanıyoruz
+            float randomZ = Random.Range(spawnAreaMinZ, spawnAreaMaxZ);
+            float randomY = platform.transform.position.y + platformHeight + 1f;
             float lanePositionX = LaneManager.instance.GetRandomLane();
 
             Vector3 spawnPosition = new Vector3(lanePositionX, randomY, randomZ);
 
-            // spawn et
-            Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+            GameObject newObstacle = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+            obstaclesList.Add(newObstacle); // Listeye ekle
         }
     }
 }

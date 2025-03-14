@@ -1,41 +1,29 @@
 using UnityEngine;
+using System.Collections.Generic;
+using Random = UnityEngine.Random;
 
 public class CollectableSpawner : MonoBehaviour
 {
     public GameObject collectablePrefab;
-    public Transform platform;
-    public int minCollectables = 5;
-    public int maxCollectables = 10;
 
-    public Vector3 spawnAreaMin;   
-    public Vector3 spawnAreaMax;
-
-    void Start()
+    public void SpawnCollectables(GameObject platform, List<GameObject> collectablesList)
     {
-        SpawnCollectables();
-    }
-
-    void SpawnCollectables()
-    {
-        int collectableCount = Random.Range(minCollectables, maxCollectables);
-
+        int collectableCount = Random.Range(5, 10);
         float platformHeight = platform.GetComponent<Collider>().bounds.extents.y;
+
+        float spawnAreaMinZ = platform.transform.position.z - 100f;
+        float spawnAreaMaxZ = platform.transform.position.z + 100f;
 
         for (int i = 0; i < collectableCount; i++)
         {
-            // Platform üzerinde rastgele bir pozisyon
-            float randomX = Random.Range(spawnAreaMin.x, spawnAreaMax.x);
-            float randomZ = Random.Range(spawnAreaMin.z, spawnAreaMax.z);
-
-            float randomY = platform.position.y + platformHeight + 1f; // Platformdan yükseklik
-
-            // Şerit pozisyonunu almak için LaneManager kullanıyoruz
+            float randomZ = Random.Range(spawnAreaMinZ, spawnAreaMaxZ);
+            float randomY = platform.transform.position.y + platformHeight + 1f;
             float lanePositionX = LaneManager.instance.GetRandomLane();
 
             Vector3 spawnPosition = new Vector3(lanePositionX, randomY, randomZ);
 
-            // spawn et
-            Instantiate(collectablePrefab, spawnPosition, Quaternion.identity);
+            GameObject newCollectable = Instantiate(collectablePrefab, spawnPosition, Quaternion.identity);
+            collectablesList.Add(newCollectable); // Listeye ekle
         }
     }
 }
