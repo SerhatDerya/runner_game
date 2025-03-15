@@ -68,6 +68,7 @@
     <Compile Include="Assets/Scripts/ObstacleSpawner.cs" />
     <Compile Include="Assets/TutorialInfo/Scripts/Readme.cs" />
     <Compile Include="Assets/Scripts/CollectableObjectController.cs" />
+    <Compile Include="Assets/Scripts/GameManager.cs" />
     <Compile Include="Assets/Scripts/PlatformManager.cs" />
     <Compile Include="Assets/Scripts/LaneManager.cs" />
     <Compile Include="Assets/Scripts/CollectableSpawner.cs" />

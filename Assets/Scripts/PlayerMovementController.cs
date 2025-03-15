@@ -4,16 +4,35 @@ public class PlayerMovementController : MonoBehaviour
 {
     public float forward_speed = 5f;
     public float laneChangeSpeed = 15f;
-    private int currentLaneIndex = 1; // Başlangıçta orta şerit (lanes dizisinin 1. indeksi)
     private Vector3 targetPosition;
     private Rigidbody rb;
     private bool isChangingLane = false;
+    private int currentLaneIndex;
+
+    private void OnEnable()
+    {
+        GameManager.OnLaneChange += UpdateLane; // Event'e abone ol
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnLaneChange -= UpdateLane; // Event'ten çık
+    }
+
+    private void UpdateLane(int newLaneIndex)
+    {
+        currentLaneIndex = newLaneIndex;
+        transform.position = new Vector3(
+            LaneManager.instance.GetLanePosition(currentLaneIndex),
+            transform.position.y,
+            transform.position.z
+        );
+    }
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true; // Düşme engelleme
-        targetPosition = transform.position;
     }
 
     void Update()
@@ -33,7 +52,7 @@ public class PlayerMovementController : MonoBehaviour
 
         if (!isChangingLane)
         {
-            if (horizontalInput > 0 && currentLaneIndex < LaneManager.instance.lanes.Length - 1) // Sağ şeride geç
+            if (horizontalInput > 0 && currentLaneIndex < LaneManager.instance.laneCount - 1) // Sağ şeride geç
             {
                 currentLaneIndex++;
                 isChangingLane = true;
@@ -51,7 +70,7 @@ public class PlayerMovementController : MonoBehaviour
         }
 
         // Yeni şerit pozisyonunu LaneManager'dan al
-        targetPosition = new Vector3(LaneManager.instance.lanes[currentLaneIndex], transform.position.y, transform.position.z);
+        targetPosition = new Vector3(LaneManager.instance.GetLanePosition(currentLaneIndex), transform.position.y, transform.position.z);
 
         // Sağa-sola yumuşak geçiş
         Vector3 smoothedPosition = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * laneChangeSpeed);

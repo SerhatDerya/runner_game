@@ -360,6 +360,7 @@
 -analyzer:"/Applications/Unity/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 "Assets/Scripts/CollectableObjectController.cs"
 "Assets/Scripts/CollectableSpawner.cs"
+"Assets/Scripts/GameManager.cs"
 "Assets/Scripts/LaneManager.cs"
 "Assets/Scripts/ObstacleSpawner.cs"
 "Assets/Scripts/PlatformManager.cs"
