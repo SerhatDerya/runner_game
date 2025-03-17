@@ -32,7 +32,7 @@ public class PlayerMovementController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true; // Düşme engelleme
+        rb.isKinematic = true;
     }
 
     void Update()
@@ -43,7 +43,8 @@ public class PlayerMovementController : MonoBehaviour
 
     void MoveForward()
     {
-        rb.velocity = new Vector3(0, rb.velocity.y, forward_speed);
+        //transform üzerinden hareket
+        transform.Translate(Vector3.forward * forward_speed * Time.deltaTime);
     }
 
     void HandleLaneChange()
@@ -73,7 +74,6 @@ public class PlayerMovementController : MonoBehaviour
         targetPosition = new Vector3(LaneManager.instance.GetLanePosition(currentLaneIndex), transform.position.y, transform.position.z);
 
         // Sağa-sola yumuşak geçiş
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * laneChangeSpeed);
-        rb.MovePosition(smoothedPosition);
+        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * laneChangeSpeed);
     }
 }
