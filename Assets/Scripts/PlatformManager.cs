@@ -4,32 +4,27 @@ using UnityEngine;
 public class PlatformManager : MonoBehaviour
 {
     public ObstacleSpawner obstacleSpawner;
-    public CollectableSpawner collectableSpawner;
+    public CollectibleSpawner collectibleSpawner;
+    public CollectiblePool collectiblePool;
     public GameObject platformPrefab;
     public Transform playerTransform;
-    private GameObject currentPlatform;
     private int platformCount = 2;
 
     private Queue<GameObject> platformQueue = new Queue<GameObject>();
 
-    private Dictionary<GameObject, List<GameObject>> platformObstacles = new Dictionary<GameObject, List<GameObject>>();
-    private Dictionary<GameObject, List<GameObject>> platformCollectables = new Dictionary<GameObject, List<GameObject>>();
 
     void Start()
     {
+        //Debug.Log(collectiblePool.objectPool.Count);
         // İlk platformun oluşturulması
         GameObject firstPlatform = Instantiate(platformPrefab, Vector3.zero, Quaternion.identity);
         platformQueue.Enqueue(firstPlatform);
-        currentPlatform = firstPlatform;
 
-        // İlk platform için collectable ve obstacle'ların spawn edilmesi
-        platformObstacles[firstPlatform] = new List<GameObject>();
-        platformCollectables[firstPlatform] = new List<GameObject>();
-
-        collectableSpawner.SpawnCollectables(firstPlatform, platformCollectables[firstPlatform]);
-        obstacleSpawner.SpawnObstacles(firstPlatform, platformObstacles[firstPlatform]);
+        collectibleSpawner.SpawnCollectibles(firstPlatform);
+        obstacleSpawner.SpawnObstacles(firstPlatform);
 
         SpawnPlatform(); // İlk platformun spawn edilmesi
+        //Debug.Log(collectiblePool.objectPool.Count);
     }
 
     void SpawnPlatform()
@@ -42,25 +37,6 @@ public class PlatformManager : MonoBehaviour
             // En eski platformu (kuyruğun başındaki) al
             GameObject oldPlatform = platformQueue.Dequeue();
 
-            // Platformun üzerindeki engelleri ve collectable'ları Destroy et
-            if (platformObstacles.ContainsKey(oldPlatform))
-            {
-                foreach (GameObject obj in platformObstacles[oldPlatform])
-                {
-                    Destroy(obj);
-                }
-                platformObstacles.Remove(oldPlatform);
-            }
-
-            if (platformCollectables.ContainsKey(oldPlatform))
-            {
-                foreach (GameObject obj in platformCollectables[oldPlatform])
-                {
-                    Destroy(obj);
-                }
-                platformCollectables.Remove(oldPlatform);
-            }
-            
             // Platformu yeni pozisyona taşı (Son platformun 200 birim ilerisine)
             float newZ = lastPlatform.transform.position.z + 200;
             oldPlatform.transform.position = new Vector3(
@@ -68,17 +44,19 @@ public class PlatformManager : MonoBehaviour
                 oldPlatform.transform.position.y, 
                 newZ
             );
+
+            // Platformun üzerindeki engelleri ve collectible'ların pozisyonunu değiştir
+            obstacleSpawner.ChangeObstaclePosition(oldPlatform);
+            collectibleSpawner.ChangeCollectiblePosition(oldPlatform);
+
             
             // Taşınan platformu kuyruğun sonuna ekle
             platformQueue.Enqueue(oldPlatform);
-            
-            // Yeni konumdaki platform için collectable ve obstacle listeleri
-            platformObstacles[oldPlatform] = new List<GameObject>();
-            platformCollectables[oldPlatform] = new List<GameObject>();
 
-            // Yeniden konumlandırılan platform için collectable ve obstacle'ları spawn et
-            collectableSpawner.SpawnCollectables(oldPlatform, platformCollectables[oldPlatform]);
-            obstacleSpawner.SpawnObstacles(oldPlatform, platformObstacles[oldPlatform]);
+            
+            // Yeniden konumlandırılan platform için collectible ve obstacle'ları spawn et
+            collectibleSpawner.SpawnCollectibles(oldPlatform);
+            obstacleSpawner.SpawnObstacles(oldPlatform);
         }
         else
         {
@@ -91,19 +69,17 @@ public class PlatformManager : MonoBehaviour
             GameObject newPlatform = Instantiate(platformPrefab, newPlatformPos, Quaternion.identity);
             platformQueue.Enqueue(newPlatform);
 
-            // Yeni platform için collectable ve obstacle listeleri
-            platformObstacles[newPlatform] = new List<GameObject>();
-            platformCollectables[newPlatform] = new List<GameObject>();
 
-            // Yeni platform için collectable ve obstacle'ları spawn et
-            collectableSpawner.SpawnCollectables(newPlatform, platformCollectables[newPlatform]);
-            obstacleSpawner.SpawnObstacles(newPlatform, platformObstacles[newPlatform]);
+            // Yeni platform için collectible ve obstacle'ları spawn et
+            collectibleSpawner.SpawnCollectibles(newPlatform);
+            obstacleSpawner.SpawnObstacles(newPlatform);
         }
     }
 
     // Update is called once per frame
     void Update()
     {
+        //Debug.Log(collectiblePool.objectPool.Count);
         if (platformQueue.Count > 0)
         {
             GameObject lastPlatform = platformQueue.ToArray()[platformQueue.Count - 1];

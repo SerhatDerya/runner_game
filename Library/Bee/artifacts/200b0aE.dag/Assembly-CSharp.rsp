@@ -356,12 +356,21 @@
 -r:"Library/Bee/artifacts/200b0aE.dag/Unity.VSCode.Editor.ref.dll"
 -r:"Library/Bee/artifacts/200b0aE.dag/UnityEditor.UI.ref.dll"
 -r:"Library/Bee/artifacts/200b0aE.dag/UnityEngine.UI.ref.dll"
+<<<<<<< Updated upstream
 -analyzer:"/Applications/Unity/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll"
 -analyzer:"/Applications/Unity/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 "Assets/Scripts/CollectableObjectController.cs"
 "Assets/Scripts/CollectableSpawner.cs"
+=======
+-analyzer:"/Applications/Unity/Hub/Editor/2022.3.46f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll"
+-analyzer:"/Applications/Unity/Hub/Editor/2022.3.46f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
+"Assets/Scripts/CollectibleObjectController.cs"
+"Assets/Scripts/CollectiblePool.cs"
+"Assets/Scripts/CollectibleSpawner.cs"
+>>>>>>> Stashed changes
 "Assets/Scripts/GameManager.cs"
 "Assets/Scripts/LaneManager.cs"
+"Assets/Scripts/ObstaclePool.cs"
 "Assets/Scripts/ObstacleSpawner.cs"
 "Assets/Scripts/PlatformManager.cs"
 "Assets/Scripts/PlayerMovementController.cs"

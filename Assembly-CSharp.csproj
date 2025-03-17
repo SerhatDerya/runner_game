@@ -67,11 +67,13 @@
     <Compile Include="Assets/Scripts/PlayerMovementController.cs" />
     <Compile Include="Assets/Scripts/ObstacleSpawner.cs" />
     <Compile Include="Assets/TutorialInfo/Scripts/Readme.cs" />
-    <Compile Include="Assets/Scripts/CollectableObjectController.cs" />
+    <Compile Include="Assets/Scripts/CollectiblePool.cs" />
     <Compile Include="Assets/Scripts/GameManager.cs" />
     <Compile Include="Assets/Scripts/PlatformManager.cs" />
     <Compile Include="Assets/Scripts/LaneManager.cs" />
-    <Compile Include="Assets/Scripts/CollectableSpawner.cs" />
+    <Compile Include="Assets/Scripts/CollectibleObjectController.cs" />
+    <Compile Include="Assets/Scripts/ObstaclePool.cs" />
+    <Compile Include="Assets/Scripts/CollectibleSpawner.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

@@ -152,7 +152,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   obstacleSpawner: {fileID: 1884927513}
-  collectableSpawner: {fileID: 1120419625}
+  collectibleSpawner: {fileID: 1120419625}
+  collectiblePool: {fileID: 903851068}
   platformPrefab: {fileID: 2001303031049584126, guid: 1b08e4cce86854e818ff18529cd0b5d1,
     type: 3}
   playerTransform: {fileID: 1771853624}
@@ -166,6 +167,53 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -59.6}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &164895134
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 164895136}
+  - component: {fileID: 164895135}
+  m_Layer: 0
+  m_Name: ObstaclePool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &164895135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164895134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c87e20b589ba4f159b9be6a84c8e666, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  obstaclePrefab: {fileID: 3582724681414385418, guid: fc131c1391dfd4ebfbfa95803ca2bf9b,
+    type: 3}
+  poolSize: 30
+--- !u!4 &164895136
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164895134}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.758179, y: 9.993221, z: -70.72895}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -309,6 +357,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &903851067
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 903851069}
+  - component: {fileID: 903851068}
+  m_Layer: 0
+  m_Name: CollectiblePool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &903851068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 903851067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43b8d199600754f06b1fba78411b02e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collectiblePrefab: {fileID: 2922690847045395028, guid: a08ef0cd798b04644b1b6c9e305bb9d4,
+    type: 3}
+  poolSize: 30
+--- !u!4 &903851069
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 903851067}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.758179, y: 9.993221, z: -70.72895}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -412,7 +507,7 @@ GameObject:
   - component: {fileID: 1120419626}
   - component: {fileID: 1120419625}
   m_Layer: 0
-  m_Name: CollectableSpawner
+  m_Name: CollectibleSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -427,11 +522,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1120419624}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1950b1f35d3574623a99965326544c8a, type: 3}
+  m_Script: {fileID: 11500000, guid: d62df81fcfd33441eb9b81c2b45adc32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collectablePrefab: {fileID: 2922690847045395028, guid: a08ef0cd798b04644b1b6c9e305bb9d4,
-    type: 3}
+  CollectiblePool: {fileID: 903851068}
 --- !u!4 &1120419626
 Transform:
   m_ObjectHideFlags: 0
@@ -675,8 +769,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec719072fba014071a394a2409880268, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstaclePrefab: {fileID: 3582724681414385418, guid: fc131c1391dfd4ebfbfa95803ca2bf9b,
-    type: 3}
+  obstaclePool: {fileID: 164895135}
 --- !u!4 &1884927514
 Transform:
   m_ObjectHideFlags: 0
@@ -703,3 +796,5 @@ SceneRoots:
   - {fileID: 1443303117}
   - {fileID: 76236635}
   - {fileID: 450158495}
+  - {fileID: 903851069}
+  - {fileID: 164895136}
