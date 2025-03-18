@@ -15,7 +15,7 @@ public class ObstaclePool : MonoBehaviour
         InitializePool();
     }
     
-    private void InitializePool()
+    public void InitializePool()
     {
         for (int i = 0; i < poolSize; i++)
         {

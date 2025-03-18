@@ -6,6 +6,7 @@ public class PlatformManager : MonoBehaviour
     public ObstacleSpawner obstacleSpawner;
     public CollectibleSpawner collectibleSpawner;
     public CollectiblePool collectiblePool;
+    public ObstaclePool obstaclePool;
     public GameObject platformPrefab;
     public Transform playerTransform;
     private int platformCount = 2;
@@ -20,6 +21,9 @@ public class PlatformManager : MonoBehaviour
         GameObject firstPlatform = Instantiate(platformPrefab, Vector3.zero, Quaternion.identity);
         platformQueue.Enqueue(firstPlatform);
 
+        collectiblePool.InitializePool();
+        obstaclePool.InitializePool();
+        
         collectibleSpawner.SpawnCollectibles(firstPlatform);
         obstacleSpawner.SpawnObstacles(firstPlatform);
 

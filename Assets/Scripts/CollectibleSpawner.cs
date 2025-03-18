@@ -24,7 +24,7 @@ public class CollectibleSpawner : MonoBehaviour
             Vector3 spawnPosition = new Vector3(lanePositionX, randomY, randomZ);
 
             // Havuzdan collectible al ve pozisyonunu ayarla
-            GameObject collectible = CollectiblePool.Instance.GetCollectible();
+            GameObject collectible = CollectiblePool.GetCollectible();
             collectible.transform.position = spawnPosition;
             activeCollectibles.Enqueue(collectible);
         }
@@ -37,7 +37,7 @@ public class CollectibleSpawner : MonoBehaviour
         // Return first half of obstacles to the pool
         for (int i = 0; i < halfCount; i++)
         {
-            CollectiblePool.Instance.ReturnToPool(activeCollectibles.Dequeue());
+            CollectiblePool.ReturnToPool(activeCollectibles.Dequeue());
         }
         
     }

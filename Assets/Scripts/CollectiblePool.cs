@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CollectiblePool : MonoBehaviour
 {
-    public static CollectiblePool Instance;
+    //public static CollectiblePool Instance;
     
     [SerializeField] private GameObject collectiblePrefab;
     public int poolSize = 30;
@@ -12,17 +12,12 @@ public class CollectiblePool : MonoBehaviour
     
     private void Awake()
     {
-        if (Instance == null){
-            Instance = this;
-        }   
-        else{
-            Destroy(gameObject);
-        }
+        
         
         InitializePool();
     }
     
-    private void InitializePool()
+    public void InitializePool()
     {
         for (int i = 0; i < poolSize; i++)
         {
