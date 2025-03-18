@@ -4,19 +4,16 @@ public class PlayerMovementController : MonoBehaviour
 {
     public float forwardSpeed = 5f;
     public float laneChangeSpeed = 15f;
-    public float jumpForce = 7f;
-    public float gravity = 20f;
-    public float fallGravityMultiplier = 2f;
-    public LayerMask groundLayer;
-
+    public float jumpForce = 8f;
+    public float gravity = 9.8f;
+    public float fallGravityMultiplier = 2.5f;
+    public LayerMask groundLayerMask;
     private Vector3 targetPosition;
-    private CharacterController characterController;
     private Rigidbody rb;
     private int currentLaneIndex;
-    private float verticalVelocity;
+    private float verticalVelocity = 0f;
     private bool isGrounded;
     private bool isChangingLane = false;
-
     private void OnEnable()
     {
         GameManager.OnLaneChange += UpdateLane;
@@ -29,7 +26,6 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Start()
     {
-        characterController = GetComponent<CharacterController>();
         rb = GetComponent<Rigidbody>();
     }
 
@@ -41,31 +37,44 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Move()
     {
-        isGrounded = Physics.CheckSphere(transform.position, 0.2f, groundLayer);
+        float height = GetComponent<Collider>().bounds.size.y;
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, (height / 2) + 0.1f, groundLayerMask);
 
-        if (isGrounded && verticalVelocity < 0)
+        if (isGrounded)
         {
-            verticalVelocity = -2f; // Hafif bir aşağı ivme (hızlı yere yapışmayı önler)
+            if (verticalVelocity < 0)
+            {
+                verticalVelocity = 0f; // Yere çarptığında hızı sıfırla
+            }
         }
 
         if (isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
             verticalVelocity = jumpForce;
+            isGrounded = false;
         }
 
-        // **Düşüş sırasında yerçekimini artır (daha doğal bir his için)**
-        if (!isGrounded && verticalVelocity < 0)
-        {
-            verticalVelocity -= gravity * fallGravityMultiplier * Time.deltaTime;
-        }
-        else
+        // Yerçekimi uygula
+        if (!isGrounded)
         {
             verticalVelocity -= gravity * Time.deltaTime;
         }
 
-        Vector3 moveDirection = Vector3.forward * forwardSpeed + Vector3.up * verticalVelocity;
-        characterController.Move(moveDirection * Time.deltaTime);
+        // Hareket
+        Vector3 moveDirection = new Vector3(0, verticalVelocity, forwardSpeed);
+        transform.position += moveDirection * Time.deltaTime;
+
+        // Zemin Kontrolü
+        if (isGrounded)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, Vector3.down, out hit, (height / 2) + 0.2f, groundLayerMask))
+            {
+                transform.position = new Vector3(transform.position.x, hit.point.y + (height / 2), transform.position.z);
+            }
+        }
     }
+
 
     private void HandleLaneChange()
     {
