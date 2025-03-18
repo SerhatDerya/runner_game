@@ -19,7 +19,7 @@ public class ObstacleSpawner : MonoBehaviour
         for (int i = 0; i < obstacleCount; i++)
         {
             float randomZ = Random.Range(spawnAreaMinZ, spawnAreaMaxZ);
-            float randomY = platform.transform.position.y + platformHeight + 1f;
+            float randomY = platform.transform.position.y + platformHeight + 0.5f;
             float lanePositionX = LaneManager.instance.GetRandomLane();
 
             Vector3 spawnPosition = new Vector3(lanePositionX, randomY, randomZ);
