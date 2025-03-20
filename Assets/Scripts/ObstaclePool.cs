@@ -5,7 +5,8 @@ public class ObstaclePool : MonoBehaviour
 {
     //public static ObstaclePool Instance;
     
-    [SerializeField] private GameObject obstaclePrefab;
+    [SerializeField] private GameObject obstacleFullPrefab;
+    [SerializeField] private GameObject obstacleHalfPrefab;
     public int poolSize = 30;
     
     public Queue<GameObject> objectPool = new Queue<GameObject>();
@@ -19,7 +20,18 @@ public class ObstaclePool : MonoBehaviour
     {
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject obstacle = Instantiate(obstaclePrefab);
+            GameObject obstacle;
+            float randomValue = Random.Range(0f, 1f);
+
+            if (randomValue <= 0.6f)
+            {
+                obstacle = Instantiate(obstacleFullPrefab);
+            }
+            else
+            {
+                obstacle = Instantiate(obstacleHalfPrefab);
+            }
+
             obstacle.SetActive(false);
             objectPool.Enqueue(obstacle);
         }

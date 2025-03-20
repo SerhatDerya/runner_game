@@ -24,8 +24,9 @@ public class PlatformManager : MonoBehaviour
         collectiblePool.InitializePool();
         obstaclePool.InitializePool();
         
-        collectibleSpawner.SpawnCollectibles(firstPlatform);
         obstacleSpawner.SpawnObstacles(firstPlatform);
+        collectibleSpawner.SpawnCollectibles(firstPlatform);
+        
 
         SpawnPlatform(); // İlk platformun spawn edilmesi
         //Debug.Log(collectiblePool.objectPool.Count);
@@ -40,6 +41,7 @@ public class PlatformManager : MonoBehaviour
         {
             // En eski platformu (kuyruğun başındaki) al
             GameObject oldPlatform = platformQueue.Dequeue();
+            obstacleSpawner.ClearObstacles(oldPlatform);
 
             // Platformu yeni pozisyona taşı (Son platformun 200 birim ilerisine)
             float newZ = lastPlatform.transform.position.z + 200;
@@ -48,19 +50,15 @@ public class PlatformManager : MonoBehaviour
                 oldPlatform.transform.position.y, 
                 newZ
             );
+            GameObject newPlatform = oldPlatform;
+
+            // Taşınan platformu kuyruğun sonuna ekle
+            platformQueue.Enqueue(newPlatform);
 
             // Platformun üzerindeki engelleri ve collectible'ların pozisyonunu değiştir
-            obstacleSpawner.ChangeObstaclePosition(oldPlatform);
-            collectibleSpawner.ChangeCollectiblePosition(oldPlatform);
+            obstacleSpawner.SpawnObstacles(newPlatform);
+            collectibleSpawner.ChangeCollectiblePosition(newPlatform);
 
-            
-            // Taşınan platformu kuyruğun sonuna ekle
-            platformQueue.Enqueue(oldPlatform);
-
-            
-            // Yeniden konumlandırılan platform için collectible ve obstacle'ları spawn et
-            collectibleSpawner.SpawnCollectibles(oldPlatform);
-            obstacleSpawner.SpawnObstacles(oldPlatform);
         }
         else
         {
@@ -75,8 +73,8 @@ public class PlatformManager : MonoBehaviour
 
 
             // Yeni platform için collectible ve obstacle'ları spawn et
-            collectibleSpawner.SpawnCollectibles(newPlatform);
             obstacleSpawner.SpawnObstacles(newPlatform);
+            collectibleSpawner.SpawnCollectibles(newPlatform);
         }
     }
 
