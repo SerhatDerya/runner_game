@@ -10,7 +10,7 @@ public class ObstacleSpawner : MonoBehaviour
     private Queue<GameObject> activeObstacles = new Queue<GameObject>();
 
     [SerializeField] private float milestoneInterval = 30f;
-    [SerializeField] private float obstacleSpawnChance = 0.7f;
+    [SerializeField] private float obstacleSpawnChance = 0.75f;
     
     public void SpawnObstacles(GameObject platform)
     {

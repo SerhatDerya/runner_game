@@ -7,7 +7,7 @@ public class ObstaclePool : MonoBehaviour
     
     [SerializeField] private GameObject obstacleFullPrefab;
     [SerializeField] private GameObject obstacleHalfPrefab;
-    public int poolSize = 30;
+    public int poolSize = 50;
     
     public Queue<GameObject> objectPool = new Queue<GameObject>();
     

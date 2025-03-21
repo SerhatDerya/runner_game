@@ -1388,9 +1388,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forwardSpeed: 5
   laneChangeSpeed: 15
-  jumpForce: 7
-  gravity: 10
-  fallGravityMultiplier: 2
+  jumpForce: 8
+  gravity: 9.8
+  fallGravityMultiplier: 2.5
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 1
@@ -1416,7 +1416,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 112
