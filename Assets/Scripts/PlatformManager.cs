@@ -16,7 +16,6 @@ public class PlatformManager : MonoBehaviour
 
     void Start()
     {
-        //Debug.Log(collectiblePool.objectPool.Count);
         // İlk platformun oluşturulması
         GameObject firstPlatform = Instantiate(platformPrefab, Vector3.zero, Quaternion.identity);
         platformQueue.Enqueue(firstPlatform);
@@ -24,12 +23,11 @@ public class PlatformManager : MonoBehaviour
         collectiblePool.InitializePool();
         obstaclePool.InitializePool();
         
-        obstacleSpawner.SpawnObstacles(firstPlatform);
-        collectibleSpawner.SpawnCollectibles(firstPlatform);
+        obstacleSpawner.SpawnObjects(firstPlatform);
+        collectibleSpawner.SpawnObjects(firstPlatform);
         
 
         SpawnPlatform(); // İlk platformun spawn edilmesi
-        //Debug.Log(collectiblePool.objectPool.Count);
     }
 
     void SpawnPlatform()
@@ -41,7 +39,7 @@ public class PlatformManager : MonoBehaviour
         {
             // En eski platformu (kuyruğun başındaki) al
             GameObject oldPlatform = platformQueue.Dequeue();
-            obstacleSpawner.ClearObstacles(oldPlatform);
+            obstacleSpawner.ClearObjects(oldPlatform);
 
             // Platformu yeni pozisyona taşı (Son platformun 200 birim ilerisine)
             float newZ = lastPlatform.transform.position.z + 200;
@@ -56,8 +54,8 @@ public class PlatformManager : MonoBehaviour
             platformQueue.Enqueue(newPlatform);
 
             // Platformun üzerindeki engelleri ve collectible'ların pozisyonunu değiştir
-            obstacleSpawner.SpawnObstacles(newPlatform);
-            collectibleSpawner.ChangeCollectiblePosition(newPlatform);
+            obstacleSpawner.SpawnObjects(newPlatform);
+            collectibleSpawner.ChangeObjectPositions(newPlatform);
 
         }
         else
@@ -73,15 +71,14 @@ public class PlatformManager : MonoBehaviour
 
 
             // Yeni platform için collectible ve obstacle'ları spawn et
-            obstacleSpawner.SpawnObstacles(newPlatform);
-            collectibleSpawner.SpawnCollectibles(newPlatform);
+            obstacleSpawner.SpawnObjects(newPlatform);
+            collectibleSpawner.SpawnObjects(newPlatform);
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        //Debug.Log(collectiblePool.objectPool.Count);
         if (platformQueue.Count > 0)
         {
             GameObject lastPlatform = platformQueue.ToArray()[platformQueue.Count - 1];

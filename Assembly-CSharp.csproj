@@ -76,6 +76,7 @@
     <Compile Include="Assets/Scripts/PlatformManager.cs" />
     <Compile Include="Assets/Scripts/LaneManager.cs" />
     <Compile Include="Assets/Scripts/CollectibleObjectController.cs" />
+    <Compile Include="Assets/Scripts/BaseSpawner.cs" />
     <Compile Include="Assets/Scripts/ObstaclePool.cs" />
     <Compile Include="Assets/Scripts/CollectibleSpawner.cs" />
   </ItemGroup>

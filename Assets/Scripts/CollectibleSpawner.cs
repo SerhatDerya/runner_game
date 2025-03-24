@@ -7,7 +7,7 @@ public class CollectibleSpawner : MonoBehaviour
     public CollectiblePool CollectiblePool;
     private Queue<GameObject> activeCollectibles = new Queue<GameObject>();
 
-    public void SpawnCollectibles(GameObject platform)
+    public void SpawnObjects(GameObject platform)
     {
         int collectibleCount = CollectiblePool.poolSize/2;
         float platformHeight = platform.GetComponent<Collider>().bounds.extents.y;
@@ -30,7 +30,7 @@ public class CollectibleSpawner : MonoBehaviour
         }
     }
 
-    public void ClearCollectibles()
+    public void ClearObjects()
     {
         int halfCount = activeCollectibles.Count / 2;
         
@@ -42,12 +42,12 @@ public class CollectibleSpawner : MonoBehaviour
         
     }
     
-    public void ChangeCollectiblePosition(GameObject platform)
+    public void ChangeObjectPositions(GameObject platform)
     {
         // Önce tüm engellerin yarısını havuza geri gönder
-        ClearCollectibles();
+        ClearObjects();
         
         // Sonra platform için yeni engeller oluştur
-        SpawnCollectibles(platform);
+        SpawnObjects(platform);
     }
 }
