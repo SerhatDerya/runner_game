@@ -362,6 +362,8 @@
 "Assets/Scripts/CollectiblePool.cs"
 "Assets/Scripts/CollectibleSpawner.cs"
 "Assets/Scripts/GameManager.cs"
+"Assets/Scripts/GameObjectController.cs"
+"Assets/Scripts/IPoolable.cs"
 "Assets/Scripts/LaneManager.cs"
 "Assets/Scripts/MainMenu.cs"
 "Assets/Scripts/ObstacleObjectController.cs"

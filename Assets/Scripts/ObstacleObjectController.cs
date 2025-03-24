@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class ObstacleObjectController : MonoBehaviour
+public class ObstacleController : GameObjectController
 {
-    private void OnTriggerEnter(Collider other)
+    protected override void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))  // Player ile temas
+        if (other.CompareTag("Player"))
         {
             GameManager.instance.GameOver();
         }
