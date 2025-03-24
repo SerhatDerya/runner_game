@@ -340,7 +340,8 @@ MonoBehaviour:
     type: 3}
   obstacleHalfPrefab: {fileID: 3582724681414385418, guid: 3a412e7224c424170a1f374e45568b88,
     type: 3}
-  poolSize: 30
+  initialPoolSize: 50
+  expandAmount: 10
 --- !u!4 &164895136
 Transform:
   m_ObjectHideFlags: 0
@@ -884,7 +885,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collectiblePrefab: {fileID: 2922690847045395028, guid: a08ef0cd798b04644b1b6c9e305bb9d4,
     type: 3}
-  poolSize: 30
+  initialPoolSize: 30
+  expandAmount: 10
 --- !u!4 &903851069
 Transform:
   m_ObjectHideFlags: 0
@@ -1096,7 +1098,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d62df81fcfd33441eb9b81c2b45adc32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CollectiblePool: {fileID: 903851068}
+  objectPool: {fileID: 903851068}
+  laneManager: {fileID: 1443303116}
+  milestoneInterval: 30
+  spawnChance: 0.75
+  formationCount: 10
+  spawnDistance: 2
+  coinsPerFormation: 5
 --- !u!4 &1120419626
 Transform:
   m_ObjectHideFlags: 0
@@ -1388,7 +1396,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forwardSpeed: 15
   laneChangeSpeed: 15
-  jumpForce: 8
+  jumpForce: 12
   gravity: 9.8
   fallGravityMultiplier: 2.5
   groundLayerMask:

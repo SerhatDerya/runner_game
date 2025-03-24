@@ -1,53 +1,99 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Random = UnityEngine.Random;
 
-public class CollectibleSpawner : MonoBehaviour
+public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePool>
 {
-    public CollectiblePool CollectiblePool;
-    private Queue<GameObject> activeCollectibles = new Queue<GameObject>();
+    [SerializeField] private int formationCount = 10;
+    [SerializeField] private float spawnDistance = 2f;
+    [SerializeField] private int coinsPerFormation = 5;
 
-    public void SpawnObjects(GameObject platform)
+    public override void SpawnObjects(GameObject platform)
     {
-        int collectibleCount = CollectiblePool.poolSize/2;
-        float platformHeight = platform.GetComponent<Collider>().bounds.extents.y;
-
-        float spawnAreaMinZ = platform.transform.position.z - 100f;
-        float spawnAreaMaxZ = platform.transform.position.z + 100f;
-
-        for (int i = 0; i < collectibleCount; i++)
+        Collider platformCollider = platform.GetComponent<Collider>();
+        if (platformCollider == null)
         {
-            float randomZ = Random.Range(spawnAreaMinZ, spawnAreaMaxZ);
-            float randomY = platform.transform.position.y + platformHeight + 1f;
-            float lanePositionX = LaneManager.instance.GetRandomLane();
-
-            Vector3 spawnPosition = new Vector3(lanePositionX, randomY, randomZ);
-
-            // Havuzdan collectible al ve pozisyonunu ayarla
-            GameObject collectible = CollectiblePool.GetCollectible();
-            collectible.transform.position = spawnPosition;
-            activeCollectibles.Enqueue(collectible);
+            Debug.LogError("Platform has no collider!");
+            return;
         }
+
+        float platformLength = platformCollider.bounds.size.z;
+        float platformHeight = platformCollider.bounds.size.y;
+        float platformStartZ = platform.transform.position.z - (platformLength / 2);
+        float platformEndZ = platform.transform.position.z + (platformLength / 2);
+
+        for (int i = 0; i < formationCount; i++)
+        {
+            float spawnZ = Random.Range(platformStartZ + 10f, platformEndZ - 10f);
+            float lanePositionX = laneManager.GetRandomLane();
+
+            List<Vector3> spawnPositions = CoinPattern.GetLinePattern(
+                new Vector3(lanePositionX, CalculateSpawnHeight(platform), spawnZ),
+                coinsPerFormation,
+                spawnDistance
+            );
+
+            foreach (Vector3 pos in spawnPositions)
+            {
+                GameObject collectible = GetObjectFromPool();
+
+                if (collectible != null) // Null kontrolü eklendi
+                {
+                    collectible.transform.position = pos;
+                    activeObjects.Enqueue(collectible);
+                }
+                else
+                {
+                    Debug.LogWarning("Failed to get collectible from pool for position: " + pos);
+                }
+            }
+        }
+
+
     }
 
-    public void ClearObjects()
+    protected override void ReturnObjectToPool(GameObject obj)
     {
-        int halfCount = activeCollectibles.Count / 2;
-        
-        // Return first half of obstacles to the pool
-        for (int i = 0; i < halfCount; i++)
-        {
-            CollectiblePool.ReturnToPool(activeCollectibles.Dequeue());
-        }
-        
+        objectPool.ReturnToPool(obj); // objectPool zaten CollectiblePool tipinde
     }
+
+    protected override GameObject GetObjectFromPool()
+    {
+        if (objectPool == null)
+        {
+            Debug.LogError("ObjectPool reference is not set!");
+            return null;
+        }
+
+        GameObject collectible = objectPool.GetCollectible();
+
+        if (collectible == null)
+        {
+            Debug.LogWarning("No available collectibles in the pool!");
+        }
+
+        return collectible;
+    }
+
+public override void ClearObjects(GameObject platform)
+{
+    if (platform == null) return;
+
+    float platformMinZ = platform.transform.position.z - platform.transform.localScale.z/2;
+    float platformMaxZ = platform.transform.position.z + platform.transform.localScale.z/2;
     
-    public void ChangeObjectPositions(GameObject platform)
+    int itemsToProcess = activeObjects.Count;
+    for (int i = 0; i < itemsToProcess; i++)
     {
-        // Önce tüm engellerin yarısını havuza geri gönder
-        ClearObjects();
-        
-        // Sonra platform için yeni engeller oluştur
-        SpawnObjects(platform);
+        GameObject obj = activeObjects.Dequeue();
+        if (obj.transform.position.z >= platformMinZ && 
+            obj.transform.position.z <= platformMaxZ)
+        {
+            ReturnObjectToPool(obj);
+        }
+        else
+        {
+            activeObjects.Enqueue(obj); // Kalanları geri ekle
+        }
     }
+}
 }

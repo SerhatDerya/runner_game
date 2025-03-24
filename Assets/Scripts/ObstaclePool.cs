@@ -3,57 +3,64 @@ using UnityEngine;
 
 public class ObstaclePool : MonoBehaviour
 {
-    //public static ObstaclePool Instance;
-    
     [SerializeField] private GameObject obstacleFullPrefab;
     [SerializeField] private GameObject obstacleHalfPrefab;
-    public int poolSize = 50;
+    [SerializeField] private int initialPoolSize = 50;
+    [SerializeField] private int expandAmount = 10;
     
-    public Queue<GameObject> objectPool = new Queue<GameObject>();
-    
+    private Queue<GameObject> objectPool = new Queue<GameObject>();
+    private int activeCount = 0;
+
     private void Awake()
     {
         InitializePool();
     }
-    
+
     public void InitializePool()
     {
-        for (int i = 0; i < poolSize; i++)
+        for (int i = 0; i < initialPoolSize; i++)
         {
-            GameObject obstacle;
-            float randomValue = Random.Range(0f, 1f);
-
-            if (randomValue <= 0.6f)
-            {
-                obstacle = Instantiate(obstacleFullPrefab);
-            }
-            else
-            {
-                obstacle = Instantiate(obstacleHalfPrefab);
-            }
-
-            obstacle.SetActive(false);
-            objectPool.Enqueue(obstacle);
+            AddNewObstacleToPool();
         }
     }
-    
+
+    private void AddNewObstacleToPool()
+    {
+        GameObject obstacle = Random.Range(0f, 1f) <= 0.6f ? 
+            Instantiate(obstacleFullPrefab) : 
+            Instantiate(obstacleHalfPrefab);
+        
+        obstacle.SetActive(false);
+        objectPool.Enqueue(obstacle);
+    }
+
     public GameObject GetObstacle()
     {
-        if (objectPool.Count > 0)
+        if (objectPool.Count == 0)
         {
-            GameObject obstacle = objectPool.Dequeue();
-            obstacle.SetActive(true);
-            return obstacle;
+            Debug.LogWarning("Pool empty, expanding...");
+            ExpandPool();
         }
-        else
-        {
-            return null;
-        }
+
+        GameObject obstacle = objectPool.Dequeue();
+        obstacle.SetActive(true);
+        activeCount++;
+        return obstacle;
     }
-    
+
+    private void ExpandPool()
+    {
+        for (int i = 0; i < expandAmount; i++)
+        {
+            AddNewObstacleToPool();
+        }
+        Debug.Log($"Pool expanded. New size: {objectPool.Count + activeCount}");
+    }
+
     public void ReturnToPool(GameObject obstacle)
     {
         obstacle.SetActive(false);
         objectPool.Enqueue(obstacle);
+        activeCount--;
     }
 }
