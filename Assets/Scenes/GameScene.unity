@@ -1106,6 +1106,7 @@ MonoBehaviour:
   formationCount: 10
   spawnDistance: 2
   coinsPerFormation: 5
+  arcHeight: 2
 --- !u!4 &1120419626
 Transform:
   m_ObjectHideFlags: 0
@@ -1397,7 +1398,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forwardSpeed: 15
   laneChangeSpeed: 15
-  jumpForce: 12
+  jumpForce: 10
   gravity: 9.8
   fallGravityMultiplier: 2.5
   groundLayerMask:
