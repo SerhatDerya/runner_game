@@ -1,66 +1,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObstaclePool : MonoBehaviour
+public class ObstaclePool : GenericObjectPool<ObstacleController>
 {
     [SerializeField] private GameObject obstacleFullPrefab;
     [SerializeField] private GameObject obstacleHalfPrefab;
-    [SerializeField] private int initialPoolSize = 50;
-    [SerializeField] private int expandAmount = 10;
-    
-    private Queue<GameObject> objectPool = new Queue<GameObject>();
-    private int activeCount = 0;
+    [SerializeField] private float fullObstacleProbability = 0.6f;
 
-    private void Awake()
+    public override void AddNewObjectToPool()
     {
-        InitializePool();
-    }
-
-    public void InitializePool()
-    {
-        for (int i = 0; i < initialPoolSize; i++)
-        {
-            AddNewObstacleToPool();
-        }
-    }
-
-    private void AddNewObstacleToPool()
-    {
-        GameObject obstacle = Random.Range(0f, 1f) <= 0.6f ? 
-            Instantiate(obstacleFullPrefab) : 
-            Instantiate(obstacleHalfPrefab);
+        // Rastgele engel tipini seç
+        GameObject selectedPrefab = Random.Range(0f, 1f) <= fullObstacleProbability ? 
+            obstacleFullPrefab : obstacleHalfPrefab;
         
-        obstacle.SetActive(false);
+        // Prefabı instanciate et ve ObstacleController bileşenini al
+        ObstacleController obstacle = Instantiate(selectedPrefab).GetComponent<ObstacleController>();
+        
+        if (obstacle == null)
+        {
+            Debug.LogError($"Prefab does not have ObstacleController component! {selectedPrefab.name}");
+            return;
+        }
+        
+        // Nesneyi devre dışı bırak ve havuza ekle
+        obstacle.gameObject.SetActive(false);
+        //obstacle.transform.SetParent(transform);
         objectPool.Enqueue(obstacle);
     }
 
-    public GameObject GetObstacle()
+    public GameObject GetGameObject()
     {
-        if (objectPool.Count == 0)
+        ObstacleController controller = GetObject();
+        return controller?.gameObject;
+    }
+    
+    
+    public void ReturnGameObject(GameObject obj)
+    {
+        ObstacleController controller = obj.GetComponent<ObstacleController>();
+        if (controller != null)
         {
-            Debug.LogWarning("Pool empty, expanding...");
-            ExpandPool();
+            ReturnToPool(controller);
         }
-
-        GameObject obstacle = objectPool.Dequeue();
-        obstacle.SetActive(true);
-        activeCount++;
-        return obstacle;
-    }
-
-    private void ExpandPool()
-    {
-        for (int i = 0; i < expandAmount; i++)
+        else
         {
-            AddNewObstacleToPool();
+            Debug.LogError($"GameObject does not have ObstacleController component!");
         }
-        Debug.Log($"Pool expanded. New size: {objectPool.Count + activeCount}");
     }
 
-    public void ReturnToPool(GameObject obstacle)
-    {
-        obstacle.SetActive(false);
-        objectPool.Enqueue(obstacle);
-        activeCount--;
-    }
 }

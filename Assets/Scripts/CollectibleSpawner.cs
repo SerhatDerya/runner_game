@@ -51,28 +51,6 @@ public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePoo
 
     }
 
-    protected override void ReturnObjectToPool(GameObject obj)
-    {
-        objectPool.ReturnToPool(obj); // objectPool zaten CollectiblePool tipinde
-    }
-
-    protected override GameObject GetObjectFromPool()
-    {
-        if (objectPool == null)
-        {
-            Debug.LogError("ObjectPool reference is not set!");
-            return null;
-        }
-
-        GameObject collectible = objectPool.GetCollectible();
-
-        if (collectible == null)
-        {
-            Debug.LogWarning("No available collectibles in the pool!");
-        }
-
-        return collectible;
-    }
 
 public override void ClearObjects(GameObject platform)
 {
@@ -96,4 +74,15 @@ public override void ClearObjects(GameObject platform)
         }
     }
 }
+
+protected override GameObject GetObjectFromPool()
+{
+    return objectPool.GetGameObject();
+}
+
+protected override void ReturnObjectToPool(GameObject obj)
+{
+    objectPool.ReturnGameObject(obj);
+}
+
 }

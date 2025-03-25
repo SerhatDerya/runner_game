@@ -336,12 +336,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c87e20b589ba4f159b9be6a84c8e666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefab: {fileID: 5708890140103101978, guid: fc131c1391dfd4ebfbfa95803ca2bf9b, type: 3}
+  initialPoolSize: 50
+  expandAmount: 10
   obstacleFullPrefab: {fileID: 3582724681414385418, guid: fc131c1391dfd4ebfbfa95803ca2bf9b,
     type: 3}
   obstacleHalfPrefab: {fileID: 3582724681414385418, guid: 3a412e7224c424170a1f374e45568b88,
     type: 3}
-  initialPoolSize: 50
-  expandAmount: 10
+  fullObstacleProbability: 0.6
 --- !u!4 &164895136
 Transform:
   m_ObjectHideFlags: 0
@@ -883,8 +885,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43b8d199600754f06b1fba78411b02e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collectiblePrefab: {fileID: 2922690847045395028, guid: a08ef0cd798b04644b1b6c9e305bb9d4,
-    type: 3}
+  prefab: {fileID: 5830087824166244136, guid: a08ef0cd798b04644b1b6c9e305bb9d4, type: 3}
   initialPoolSize: 30
   expandAmount: 10
 --- !u!4 &903851069
@@ -1462,7 +1463,6 @@ MonoBehaviour:
   laneManager: {fileID: 1443303116}
   milestoneInterval: 30
   spawnChance: 0.75
-  fullObstacleSpawnChance: 0.6
 --- !u!4 &1884927514
 Transform:
   m_ObjectHideFlags: 0

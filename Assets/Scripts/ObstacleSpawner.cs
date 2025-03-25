@@ -3,7 +3,6 @@ using Random = UnityEngine.Random;
 
 public class ObstacleSpawner : BaseSpawner<ObstacleController, ObstaclePool>
 {
-    [SerializeField] private float fullObstacleSpawnChance = 0.6f;
     
     public override void SpawnObjects(GameObject platform)
 {
@@ -66,11 +65,11 @@ public class ObstacleSpawner : BaseSpawner<ObstacleController, ObstaclePool>
     
     protected override GameObject GetObjectFromPool()
     {
-        return objectPool.GetObstacle();
+        return objectPool.GetGameObject();
     }
     
     protected override void ReturnObjectToPool(GameObject obj)
     {
-        objectPool.ReturnToPool(obj);
+        objectPool.ReturnGameObject(obj);
     }
 }
