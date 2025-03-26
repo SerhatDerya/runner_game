@@ -372,7 +372,9 @@
 "Assets/Scripts/ObstacleObjectController.cs"
 "Assets/Scripts/ObstaclePool.cs"
 "Assets/Scripts/ObstacleSpawner.cs"
+"Assets/Scripts/Platform.cs"
 "Assets/Scripts/PlatformManager.cs"
+"Assets/Scripts/PlatformSpawner.cs"
 "Assets/Scripts/PlayerMovementController.cs"
 "Assets/TutorialInfo/Scripts/Readme.cs"
 -langversion:9.0

@@ -75,7 +75,9 @@
     <Compile Include="Assets/Scripts/CollectiblePool.cs" />
     <Compile Include="Assets/Scripts/GameManager.cs" />
     <Compile Include="Assets/Scripts/PlatformManager.cs" />
+    <Compile Include="Assets/Scripts/PlatformSpawner.cs" />
     <Compile Include="Assets/Scripts/CoinPattern.cs" />
+    <Compile Include="Assets/Scripts/Platform.cs" />
     <Compile Include="Assets/Scripts/LaneManager.cs" />
     <Compile Include="Assets/Scripts/CollectibleObjectController.cs" />
     <Compile Include="Assets/Scripts/BaseSpawner.cs" />

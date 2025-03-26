@@ -7,15 +7,16 @@ public class PlatformManager : MonoBehaviour
     public CollectibleSpawner collectibleSpawner;
     public CollectiblePool collectiblePool;
     public ObstaclePool obstaclePool;
-    public GameObject platformPrefab;
+    public PlatformSpawner platformSpawner;
     public Transform playerTransform;
     private int platformCount = 2;
 
-    private Queue<GameObject> platformQueue = new Queue<GameObject>();
+    private Queue<GameObject> platformQueue = new();
 
     void Start()
     {
-        GameObject firstPlatform = Instantiate(platformPrefab, Vector3.zero, Quaternion.identity);
+        // İlk platformu spawn et
+        GameObject firstPlatform = platformSpawner.SpawnPlatform(Vector3.zero);
         platformQueue.Enqueue(firstPlatform);
 
         // Pool'ları başlat
@@ -37,57 +38,51 @@ public class PlatformManager : MonoBehaviour
             Debug.LogError("ObstaclePool reference is not set!");
         }
 
-        collectiblePool.InitializePool();
-        obstaclePool.InitializePool();
+        // İlk platforma obje spawn et
+        SpawnObjects(firstPlatform);
 
-        obstacleSpawner.SpawnObjects(firstPlatform);
-        collectibleSpawner.SpawnObjects(firstPlatform); // Değiştirildi
-
-        SpawnPlatform(); // İlk platformun spawn edilmesi
+        // İlk platformu spawn et
+        SpawnPlatform(); 
     }
 
-    void SpawnPlatform()
+    public void SpawnPlatform()
     {
-        // En son platformu bul (kuyruğun sonundaki)
         GameObject lastPlatform = platformQueue.ToArray()[platformQueue.Count - 1];
 
         if (platformQueue.Count == platformCount)
         {
-            // En eski platformu (kuyruğun başındaki) al
+            // Eğer platform sayısı yeterliyse, eski platformu taşımak için işlem yap
             GameObject oldPlatform = platformQueue.Dequeue();
             obstacleSpawner.ClearObjects(oldPlatform);
-            collectibleSpawner.ClearObjects(oldPlatform); // Eklendi
+            collectibleSpawner.ClearObjects(oldPlatform);
 
-            // Platformu yeni pozisyona taşı (Son platformun 200 birim ilerisine)
+            // Yeni pozisyonu ayarla
             float newZ = lastPlatform.transform.position.z + 200;
-            oldPlatform.transform.position = new Vector3(
+            platformSpawner.SetPlatformPosition(oldPlatform, new Vector3(
                 oldPlatform.transform.position.x,
                 oldPlatform.transform.position.y,
                 newZ
-            );
-            GameObject newPlatform = oldPlatform;
+            ));
 
-            // Taşınan platformu kuyruğun sonuna ekle
-            platformQueue.Enqueue(newPlatform);
+            // Eski platformu tekrar kuyruğa ekle (aktif bırak)
+            platformQueue.Enqueue(oldPlatform);
+            platformSpawner.SetPlatformActive(oldPlatform, true);  // Eski platform aktif kalmalı
 
-            // Platformun üzerindeki engelleri ve collectible'ların pozisyonunu değiştir
-            obstacleSpawner.SpawnObjects(newPlatform);
-            collectibleSpawner.ChangeObjectPositions(newPlatform); // Değiştirildi
+            // Eski platformda nesneleri spawn et
+            SpawnObjects(oldPlatform);
         }
         else
         {
-            // Henüz yeterli platform yoksa, yeni bir platform oluştur
-            float platformX = lastPlatform.transform.position.x;
-            float platformY = lastPlatform.transform.position.y;
-            float newZ = lastPlatform.transform.position.z + 200;
+            // Yeni platform oluşturuluyor
+GameObject newPlatform = platformSpawner.SpawnPlatform(new Vector3(lastPlatform.transform.position.x, lastPlatform.transform.position.y, lastPlatform.transform.position.z + 200));
+platformQueue.Enqueue(newPlatform);
 
-            Vector3 newPlatformPos = new Vector3(platformX, platformY, newZ);
-            GameObject newPlatform = Instantiate(platformPrefab, newPlatformPos, Quaternion.identity);
-            platformQueue.Enqueue(newPlatform);
+// Yeni platform aktif yapılıyor
+platformSpawner.SetPlatformActive(newPlatform, true);  // Bu satır çok önemli
 
-            // Yeni platform için collectible ve obstacle'ları spawn et
-            obstacleSpawner.SpawnObjects(newPlatform);
-            collectibleSpawner.SpawnObjects(newPlatform); // Değiştirildi
+// Yeni platformda nesneleri spawn et
+SpawnObjects(newPlatform);  // Burada da SpawnObjects doğru şekilde çağrılmalı
+ // Yeni platformu aktif hale getir
         }
     }
 
@@ -97,10 +92,32 @@ public class PlatformManager : MonoBehaviour
         {
             GameObject lastPlatform = platformQueue.ToArray()[platformQueue.Count - 1];
 
+            // Oyuncu, son platforma yaklaşınca yeni platform spawn et
             if (playerTransform.position.z >= lastPlatform.transform.position.z - 50)
             {
-                SpawnPlatform();
+                SpawnPlatform(); 
             }
+
+            DeactivateOldPlatform();
         }
+    }
+
+    void DeactivateOldPlatform()
+{
+    if (platformQueue.Count > 1)
+    {
+        GameObject oldPlatform = platformQueue.Peek();  // İlk platformu al
+        if (playerTransform.position.z >= oldPlatform.transform.position.z + 120)
+        {
+            platformSpawner.SetPlatformActive(oldPlatform, false);
+        }
+    }
+}
+
+
+    void SpawnObjects(GameObject platform)
+    {
+        obstacleSpawner.SpawnObjects(platform);
+        collectibleSpawner.SpawnObjects(platform);
     }
 }

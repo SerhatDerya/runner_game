@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePool>
 {
@@ -8,41 +9,40 @@ public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePoo
     [SerializeField] private int coinsPerFormation = 5;
     [SerializeField] private float arcHeight = 2f;
 
-    public override void SpawnObjects(GameObject platform)
+    public override void SpawnObjects(GameObject platformObj)
     {
-        Collider platformCollider = platform.GetComponent<Collider>();
-        if (platformCollider == null)
+        Platform platform = platformObj.GetComponent<Platform>();
+        if (platform == null)
         {
-            Debug.LogError("Platform has no collider!");
+            Debug.LogError("Platform script is missing!");
             return;
         }
 
-        float platformLength = platformCollider.bounds.size.z;
-        float platformHeight = platformCollider.bounds.size.y;
-        float platformStartZ = platform.transform.position.z - (platformLength / 2);
-        float platformEndZ = platform.transform.position.z + (platformLength / 2);
+        List<Vector3> availablePoints = platform.GetAvailablePoints();
 
         for (int i = 0; i < formationCount; i++)
         {
-            float spawnZ = Random.Range(platformStartZ + 10f, platformEndZ - 10f);
-            float lanePositionX = laneManager.GetRandomLane();
+            if (availablePoints.Count == 0) break;
 
-            // Formasyon tipi seç
-            if (Random.value > 0.5f)
+            Vector3 spawnPoint = availablePoints[Random.Range(0, availablePoints.Count)];
+            availablePoints.Remove(spawnPoint);
+
+            List<Vector3> positions = CoinPattern.GetLinePattern(
+                spawnPoint,
+                coinsPerFormation,
+                spawnDistance
+            );
+
+            if (!positions.Any(p => platform.IsPointOccupied(p)))
             {
-                SpawnFormation(CoinPattern.GetLinePattern(
-                    new Vector3(lanePositionX, CalculateSpawnHeight(platform), spawnZ),
-                    coinsPerFormation,
-                    spawnDistance
-                ));
+                SpawnFormation(positions, platform);
             }
         }
 
-        // ObstacleHalf nesneleri için yay deseni oluştur
-        SpawnOverObstacles();
+        SpawnOverObstacles(platformObj, platform);
     }
 
-    private void SpawnOverObstacles()
+    private void SpawnOverObstacles(GameObject platformObj, Platform platform)
     {
         GameObject[] obstacles = GameObject.FindGameObjectsWithTag("ObstacleHalf");
 
@@ -62,20 +62,24 @@ public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePoo
                 spawnDistance
             );
 
-            SpawnFormation(spawnPositions);
+            if (!spawnPositions.Any(p => platform.IsPointOccupied(p)))
+            {
+                SpawnFormation(spawnPositions, platform);
+            }
         }
     }
 
-    private void SpawnFormation(List<Vector3> positions)
+    private void SpawnFormation(List<Vector3> positions, Platform platform)
     {
         foreach (Vector3 pos in positions)
         {
             GameObject collectible = GetObjectFromPool();
-
             if (collectible != null)
             {
                 collectible.transform.position = pos;
+                collectible.SetActive(true);  // Objeyi aktif hale getir
                 activeObjects.Enqueue(collectible);
+                platform.MarkPointOccupied(pos);
             }
         }
     }
@@ -87,17 +91,8 @@ public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePoo
             Debug.LogError("ObjectPool reference is not set!");
             return null;
         }
-
-        GameObject collectible = objectPool.GetGameObject(); // Artık doğru metodu çağırıyoruz
-
-        if (collectible == null)
-        {
-            Debug.LogWarning("No available collectibles in the pool!");
-        }
-
-        return collectible;
+        return objectPool.GetGameObject();
     }
-
 
     protected override void ReturnObjectToPool(GameObject obj)
     {
@@ -106,11 +101,9 @@ public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePoo
             Debug.LogError("ObjectPool reference is not set!");
             return;
         }
-
-        objectPool.ReturnGameObject(obj); // Doğrudan `ReturnGameObject()` metodunu kullanıyoruz
+        obj.SetActive(false); // Objeyi pasif hale getir
+        objectPool.ReturnGameObject(obj);  // Havuzdaki objeyi geri ver
     }
-
-
 
     public override void ClearObjects(GameObject platform)
     {
