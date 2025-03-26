@@ -19,6 +19,10 @@ public class PlatformManager : MonoBehaviour
         GameObject firstPlatform = platformSpawner.SpawnPlatform(Vector3.zero);
         platformQueue.Enqueue(firstPlatform);
 
+        // İkinci platformu spawn et
+        GameObject secondPlatform = platformSpawner.SpawnPlatform(new Vector3(0, 0, 200));
+        platformQueue.Enqueue(secondPlatform);
+
         // Pool'ları başlat
         if (collectiblePool != null)
         {
@@ -38,15 +42,19 @@ public class PlatformManager : MonoBehaviour
             Debug.LogError("ObstaclePool reference is not set!");
         }
 
-        // İlk platforma obje spawn et
+        // İlk iki platforma obje spawn et
         SpawnObjects(firstPlatform);
-
-        // İlk platformu spawn et
-        SpawnPlatform(); 
+        SpawnObjects(secondPlatform);
     }
 
     public void SpawnPlatform()
     {
+        if (platformQueue.Count == 0)
+        {
+            Debug.LogError("Platform queue is empty!");
+            return;
+        }
+
         GameObject lastPlatform = platformQueue.ToArray()[platformQueue.Count - 1];
 
         if (platformQueue.Count == platformCount)
@@ -56,33 +64,41 @@ public class PlatformManager : MonoBehaviour
             obstacleSpawner.ClearObjects(oldPlatform);
             collectibleSpawner.ClearObjects(oldPlatform);
 
+            Platform platform = oldPlatform.GetComponent<Platform>();
+            if (platform != null)
+            {
+                platform.ClearOccupiedPoints(); // İşaretlenmiş noktaları temizle
+            }
+
             // Yeni pozisyonu ayarla
-            float newZ = lastPlatform.transform.position.z + 200;
+            float platformLength = oldPlatform.GetComponent<Collider>().bounds.size.z;
+            float newZ = lastPlatform.transform.position.z + platformLength;
             platformSpawner.SetPlatformPosition(oldPlatform, new Vector3(
                 oldPlatform.transform.position.x,
                 oldPlatform.transform.position.y,
                 newZ
             ));
 
-            // Eski platformu tekrar kuyruğa ekle (aktif bırak)
-            platformQueue.Enqueue(oldPlatform);
-            platformSpawner.SetPlatformActive(oldPlatform, true);  // Eski platform aktif kalmalı
+            // Spawn noktalarını yeniden hesapla
+            if (platform != null)
+            {
+                platform.ResetSpawnPoints();
+            }
 
-            // Eski platformda nesneleri spawn et
+            platformQueue.Enqueue(oldPlatform);
             SpawnObjects(oldPlatform);
         }
         else
         {
             // Yeni platform oluşturuluyor
-GameObject newPlatform = platformSpawner.SpawnPlatform(new Vector3(lastPlatform.transform.position.x, lastPlatform.transform.position.y, lastPlatform.transform.position.z + 200));
-platformQueue.Enqueue(newPlatform);
-
-// Yeni platform aktif yapılıyor
-platformSpawner.SetPlatformActive(newPlatform, true);  // Bu satır çok önemli
-
-// Yeni platformda nesneleri spawn et
-SpawnObjects(newPlatform);  // Burada da SpawnObjects doğru şekilde çağrılmalı
- // Yeni platformu aktif hale getir
+            float platformLength = lastPlatform.GetComponent<Collider>().bounds.size.z;
+            GameObject newPlatform = platformSpawner.SpawnPlatform(new Vector3(
+                lastPlatform.transform.position.x,
+                lastPlatform.transform.position.y,
+                lastPlatform.transform.position.z + platformLength
+            ));
+            platformQueue.Enqueue(newPlatform);
+            SpawnObjects(newPlatform);
         }
     }
 
@@ -95,7 +111,7 @@ SpawnObjects(newPlatform);  // Burada da SpawnObjects doğru şekilde çağrılm
             // Oyuncu, son platforma yaklaşınca yeni platform spawn et
             if (playerTransform.position.z >= lastPlatform.transform.position.z - 50)
             {
-                SpawnPlatform(); 
+                SpawnPlatform();
             }
 
             DeactivateOldPlatform();
@@ -106,14 +122,16 @@ SpawnObjects(newPlatform);  // Burada da SpawnObjects doğru şekilde çağrılm
 {
     if (platformQueue.Count > 1)
     {
-        GameObject oldPlatform = platformQueue.Peek();  // İlk platformu al
-        if (playerTransform.position.z >= oldPlatform.transform.position.z + 120)
+        GameObject oldPlatform = platformQueue.Peek(); // İlk platformu al
+        float platformLength = oldPlatform.GetComponent<Collider>().bounds.size.z;
+
+        // Oyuncu, platformun sonundan platform uzunluğu kadar uzaklaştığında platformu devre dışı bırak
+        if (playerTransform.position.z >= oldPlatform.transform.position.z + platformLength)
         {
             platformSpawner.SetPlatformActive(oldPlatform, false);
         }
     }
 }
-
 
     void SpawnObjects(GameObject platform)
     {

@@ -6,7 +6,7 @@ public class Platform : MonoBehaviour
 {
     public List<Vector3> spawnPoints; // Platform üzerindeki olası spawn noktaları
     private HashSet<Vector3> occupiedPoints = new HashSet<Vector3>(); // Kullanılan noktalar
-    [SerializeField] private float spawnYOffset = 0.5f; // Eski yüksekliğe yakın bir değer
+    [SerializeField] private float spawnYOffset = 0.5f; // Spawn noktalarının yüksekliği
 
     private LaneManager laneManager;
 
@@ -50,6 +50,13 @@ public class Platform : MonoBehaviour
                 spawnPoints.Add(spawnPoint);
             }
         }
+    }
+
+    public void ResetSpawnPoints()
+    {
+        // İşaretlenmiş noktaları temizle ve spawn noktalarını yeniden hesapla
+        ClearOccupiedPoints();
+        InitializeSpawnPoints();
     }
 
     public void MarkPointOccupied(Vector3 point)
