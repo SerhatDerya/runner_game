@@ -6,78 +6,87 @@ public class ObstacleSpawner : BaseSpawner<ObstacleController, ObstaclePool>
     private Dictionary<float, int> laneObstacleCounts = new Dictionary<float, int>(); // Her lane'deki engel sayısını takip eder
 
     public override void SpawnObjects(GameObject platformObj)
-{
-    Platform platform = platformObj.GetComponent<Platform>();
-    if (platform == null)
     {
-        Debug.LogError("Platform script is missing!");
-        return;
-    }
-
-    List<Vector3> availablePoints = platform.GetAvailablePoints();
-
-    // Eğer availablePoints boşsa, spawn işlemini durdur
-    if (availablePoints == null || availablePoints.Count == 0)
-    {
-        Debug.LogWarning("No available points on the platform for obstacle spawning!");
-        return;
-    }
-
-    // Her lane'deki engel sayısını sıfırla
-    laneObstacleCounts.Clear();
-
-    // Mevcut platformda aktif olan tüm objeleri kontrol et ve onları spawn et
-    foreach (Vector3 spawnPoint in availablePoints)
-    {
-        if (Random.value <= spawnChance) // Rastgele spawn şansı
+        // Null kontrolü
+        if (platformObj == null)
         {
-            float laneX = spawnPoint.x;
+            Debug.LogError("Platform object is null!");
+            return;
+        }
 
-            // Aynı hizada (lane'de) 5'ten fazla engel varsa, bu lane'de yeni engel spawn etme
-            if (laneObstacleCounts.ContainsKey(laneX) && laneObstacleCounts[laneX] >= 5)
-            {
-                continue;
-            }
+        Platform platform = platformObj.GetComponent<Platform>();
+        if (platform == null)
+        {
+            Debug.LogError("Platform script is missing!");
+            return;
+        }
 
-            GameObject obstacle = GetObjectFromPool(); // Pool'dan engel al
-            if (obstacle != null)
+        List<Vector3> availablePoints = platform.GetAvailablePoints();
+
+        // Eğer availablePoints boşsa, spawn işlemini durdur
+        if (availablePoints == null || availablePoints.Count == 0)
+        {
+            Debug.LogWarning("No available points on the platform for obstacle spawning!");
+            return;
+        }
+
+        // Her lane'deki engel sayısını sıfırla
+        laneObstacleCounts.Clear();
+        
+        // Her Z pozisyonundaki engel sayısını tutacak dictionary
+        Dictionary<float, int> zPosObstacleCounts = new Dictionary<float, int>();
+
+        // Mevcut platformda aktif olan tüm objeleri kontrol et ve onları spawn et
+        foreach (Vector3 spawnPoint in availablePoints)
+        {
+            if (Random.value <= spawnChance) // Rastgele spawn şansı
             {
-                // Eğer engel "ObstacleFull" ise, aynı milestone'da 5'ten fazla olmamasını kontrol et
-                if (obstacle.tag == "ObstacleFull")
+                float laneX = spawnPoint.x;
+                float laneZ = spawnPoint.z;
+                
+                // Aynı Z ekseninde (milestone'da) 4'ten fazla engel olup olmadığını kontrol et
+                if (!zPosObstacleCounts.ContainsKey(laneZ))
                 {
-                    if (laneObstacleCounts.ContainsKey(laneX) && laneObstacleCounts[laneX] >= 4)
-                    {
-                        // Eğer bu lane'de zaten 4 "ObstacleFull" varsa, yeni bir tane eklemeyin
-                        continue;
-                    }
+                    zPosObstacleCounts[laneZ] = 0;
+                }
+                else if (zPosObstacleCounts[laneZ] >= (laneManager.laneCount-1))
+                {
+                    // Bu Z pozisyonunda (şerit sayısı - 1) engel varsa, yeni engel ekleme
+                    continue;
                 }
 
-                // Engelin Collider'ını al ve spawn yüksekliğini hesapla
-                Collider obstacleCollider = obstacle.GetComponent<Collider>();
-                if (obstacleCollider != null)
+                GameObject obstacle = GetObjectFromPool(); // Pool'dan engel al
+                if (obstacle != null)
                 {
-                    float obstacleHeight = obstacleCollider.bounds.size.y;
-                    float spawnHeight = platform.transform.position.y + obstacleHeight / 2f; // Platformun ortasında
-
-                    // Engel pozisyonunu belirle
-                    obstacle.transform.position = new Vector3(spawnPoint.x, spawnHeight, spawnPoint.z);
-                    obstacle.SetActive(true);
-                    activeObjects.Enqueue(obstacle); // Aktif engeller listesine ekle
-
-                    // Platformdaki bu noktayı işaretle
-                    platform.MarkPointOccupied(spawnPoint);
-
-                    // Bu lane'deki engel sayısını artır
-                    if (!laneObstacleCounts.ContainsKey(laneX))
+                    // Engelin Collider'ını al ve spawn yüksekliğini hesapla
+                    Collider obstacleCollider = obstacle.GetComponent<Collider>();
+                    if (obstacleCollider != null)
                     {
-                        laneObstacleCounts[laneX] = 0;
+                        float obstacleHeight = obstacleCollider.bounds.size.y;
+                        float spawnHeight = platform.transform.position.y + obstacleHeight / 2f; // Platformun ortasında
+
+                        // Engel pozisyonunu belirle
+                        obstacle.transform.position = new Vector3(spawnPoint.x, spawnHeight, spawnPoint.z);
+                        obstacle.SetActive(true);
+                        activeObjects.Enqueue(obstacle); // Aktif engeller listesine ekle
+
+                        // Platformdaki bu noktayı işaretle
+                        platform.MarkPointOccupied(spawnPoint);
+
+                        // Bu lane'deki engel sayısını artır
+                        if (!laneObstacleCounts.ContainsKey(laneX))
+                        {
+                            laneObstacleCounts[laneX] = 0;
+                        }
+                        laneObstacleCounts[laneX]++;
+                        
+                        // Bu Z pozisyonundaki engel sayısını artır
+                        zPosObstacleCounts[laneZ]++;
                     }
-                    laneObstacleCounts[laneX]++;
                 }
             }
         }
     }
-}
 
     public override void ClearObjects(GameObject platform)
     {

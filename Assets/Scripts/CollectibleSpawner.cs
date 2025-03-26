@@ -48,23 +48,25 @@ public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePoo
 
         foreach (GameObject obstacle in obstacles)
         {
-            Collider obstacleCollider = obstacle.GetComponent<Collider>();
-            if (obstacleCollider == null) continue;
+            if(Random.value > 0.5f){
+                Collider obstacleCollider = obstacle.GetComponent<Collider>();
+                if (obstacleCollider == null) continue;
 
-            float obstacleHeight = obstacleCollider.bounds.size.y;
-            Vector3 obstaclePos = obstacle.transform.position;
+                float obstacleHeight = obstacleCollider.bounds.size.y;
+                Vector3 obstaclePos = obstacle.transform.position;
 
-            List<Vector3> spawnPositions = CoinPattern.GetJumpArcPattern(
-                obstaclePos,
-                obstacleHeight,
-                coinsPerFormation,
-                arcHeight,
-                spawnDistance
-            );
+                List<Vector3> spawnPositions = CoinPattern.GetJumpArcPattern(
+                    obstaclePos,
+                    obstacleHeight,
+                    coinsPerFormation,
+                    arcHeight,
+                    spawnDistance
+                );
 
-            if (!spawnPositions.Any(p => platform.IsPointOccupied(p)))
-            {
-                SpawnFormation(spawnPositions, platform);
+                if (!spawnPositions.Any(p => platform.IsPointOccupied(p)))
+                {
+                    SpawnFormation(spawnPositions, platform);
+                }
             }
         }
     }
