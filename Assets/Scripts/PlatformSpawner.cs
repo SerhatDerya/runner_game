@@ -9,6 +9,11 @@ public class PlatformSpawner : MonoBehaviour
         return Instantiate(platformPrefab, position, Quaternion.identity);
     }
 
+    public GameObject SpawnInitialPlatform(int initialPlatformLength)
+    {
+        return Instantiate(platformPrefab, new Vector3(0, 0, - (200-initialPlatformLength)), Quaternion.identity);
+    }
+
     public void SetPlatformActive(GameObject platform, bool isActive)
     {
         platform.SetActive(isActive);

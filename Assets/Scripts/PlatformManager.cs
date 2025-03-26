@@ -10,17 +10,22 @@ public class PlatformManager : MonoBehaviour
     public PlatformSpawner platformSpawner;
     public Transform playerTransform;
     private int platformCount = 2;
+    private int initialPlatformLength = 50;
 
     private Queue<GameObject> platformQueue = new();
 
     void Start()
     {
+
+        // Başlangıç platformunu spawn et
+        platformSpawner.SpawnInitialPlatform(initialPlatformLength);
+
         // İlk platformu spawn et
-        GameObject firstPlatform = platformSpawner.SpawnPlatform(Vector3.zero);
+        GameObject firstPlatform = platformSpawner.SpawnPlatform(new Vector3(0, 0, initialPlatformLength));
         platformQueue.Enqueue(firstPlatform);
 
         // İkinci platformu spawn et
-        GameObject secondPlatform = platformSpawner.SpawnPlatform(new Vector3(0, 0, 200));
+        GameObject secondPlatform = platformSpawner.SpawnPlatform(new Vector3(0, 0, 200+initialPlatformLength));
         platformQueue.Enqueue(secondPlatform);
 
         // Pool'ları başlat
