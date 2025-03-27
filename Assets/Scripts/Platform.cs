@@ -9,6 +9,9 @@ public class Platform : MonoBehaviour
     [SerializeField] private float spawnYOffset = 0.5f; // Spawn noktalarının yüksekliği
 
     private LaneManager laneManager;
+    private int previousLaneIndex = -1; // Bir önceki formasyonun çıktığı şerit (-1 başlangıç değeri)
+    private ObstacleManager obstacleManager = new ObstacleManager(); // Obstacle yönetimi için ObstacleManager
+    private Dictionary<int, List<Vector3>> laneSpawnPoints = new Dictionary<int, List<Vector3>>(); // Şerit bazlı spawn noktaları
 
     void Awake()
     {
@@ -25,6 +28,7 @@ public class Platform : MonoBehaviour
     private void InitializeSpawnPoints()
     {
         spawnPoints = new List<Vector3>();
+        laneSpawnPoints.Clear();
 
         Collider platformCollider = GetComponent<Collider>();
         if (platformCollider == null)
@@ -48,6 +52,13 @@ public class Platform : MonoBehaviour
                 float laneX = laneManager.GetLanePosition(laneIndex);
                 Vector3 spawnPoint = new Vector3(laneX, transform.position.y + platformHeight * 0.5f + spawnYOffset, spawnZ);
                 spawnPoints.Add(spawnPoint);
+
+                // Şerit bazlı spawn noktalarını organize et
+                if (!laneSpawnPoints.ContainsKey(laneIndex))
+                {
+                    laneSpawnPoints[laneIndex] = new List<Vector3>();
+                }
+                laneSpawnPoints[laneIndex].Add(spawnPoint);
             }
         }
     }
@@ -74,8 +85,56 @@ public class Platform : MonoBehaviour
         return spawnPoints.Where(p => !occupiedPoints.Contains(p)).ToList();
     }
 
+    public List<Vector3> GetAvailablePointsInLane(int laneIndex)
+    {
+        if (!laneSpawnPoints.ContainsKey(laneIndex)) return new List<Vector3>();
+
+        return laneSpawnPoints[laneIndex].Where(p => !occupiedPoints.Contains(p)).ToList();
+    }
+
     public void ClearOccupiedPoints()
     {
         occupiedPoints.Clear();
+    }
+
+    public int GetNextLaneIndex()
+    {
+        // Eğer önceki şerit belirlenmemişse (ilk formasyon), rastgele bir şerit seç
+        if (previousLaneIndex == -1)
+        {
+            previousLaneIndex = Random.Range(0, laneManager.laneCount);
+            return previousLaneIndex;
+        }
+
+        // Sağdaki veya soldaki şeridi seç
+        int nextLaneIndex;
+        if (Random.value > 0.5f) // %50 ihtimalle sağdaki şerit
+        {
+            nextLaneIndex = Mathf.Min(previousLaneIndex + 1, laneManager.laneCount - 1);
+        }
+        else // %50 ihtimalle soldaki şerit
+        {
+            nextLaneIndex = Mathf.Max(previousLaneIndex - 1, 0);
+        }
+
+        previousLaneIndex = nextLaneIndex; // Yeni şeridi kaydet
+        return nextLaneIndex;
+    }
+
+    public void AddObstaclePosition(int laneIndex, Vector3 position)
+    {
+        obstacleManager.AddObstacle(laneIndex, position.z);
+    }
+
+    public bool IsObstacleInLane(int laneIndex, float zPosition, float tolerance = 2f)
+    {
+        return obstacleManager.IsObstacleInLane(laneIndex, zPosition, tolerance);
+    }
+
+    public List<Vector3> GetSafeSpawnPoints(int laneIndex, float zPosition, float tolerance = 2f)
+    {
+        return GetAvailablePointsInLane(laneIndex)
+            .Where(p => !IsObstacleInLane(laneIndex, p.z, tolerance))
+            .ToList();
     }
 }

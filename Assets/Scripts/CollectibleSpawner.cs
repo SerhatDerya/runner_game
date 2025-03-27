@@ -24,8 +24,23 @@ public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePoo
         {
             if (availablePoints.Count == 0) break;
 
-            Vector3 spawnPoint = availablePoints[Random.Range(0, availablePoints.Count)];
+            // Bir sonraki formasyonun şeridini belirle
+            int laneIndex = platform.GetNextLaneIndex();
+            float laneX = laneManager.GetLanePosition(laneIndex);
+
+            // Şeritteki uygun spawn noktalarını al
+            List<Vector3> lanePoints = availablePoints.Where(p => Mathf.Approximately(p.x, laneX)).ToList();
+            if (lanePoints.Count == 0) continue;
+
+            // Rastgele bir spawn noktası seç
+            Vector3 spawnPoint = lanePoints[Random.Range(0, lanePoints.Count)];
             availablePoints.Remove(spawnPoint);
+
+            // Obstacle kontrolü
+            if (platform.IsObstacleInLane(laneIndex, spawnPoint.z))
+            {
+                continue;
+            }
 
             List<Vector3> positions = CoinPattern.GetLinePattern(
                 spawnPoint,
