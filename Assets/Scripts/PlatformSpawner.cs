@@ -11,7 +11,7 @@ public class PlatformSpawner : MonoBehaviour
 
     public GameObject SpawnInitialPlatform(int initialPlatformLength)
     {
-        return Instantiate(platformPrefab, new Vector3(0, 0, - (200-initialPlatformLength)), Quaternion.identity);
+        return Instantiate(platformPrefab, new Vector3(0, 0, -initialPlatformLength), Quaternion.identity);
     }
 
     public void SetPlatformActive(GameObject platform, bool isActive)

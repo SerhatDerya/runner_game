@@ -59,11 +59,27 @@ public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePoo
 
     private void SpawnOverObstacles(GameObject platformObj, Platform platform)
     {
-        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("ObstacleHalf");
+        GameObject[] halfObstacles = GameObject.FindGameObjectsWithTag("ObstacleHalf");
+
+        // Find obstacles within range of the platform's z position
+        float platformZ = platform.transform.position.z;
+        float minZ = platformZ - 100f;
+        float maxZ = platformZ + 100f;
+
+        List<GameObject> obstacles = new List<GameObject>();
+        foreach (GameObject halfObstacle in halfObstacles)
+        {
+            float obstacleZ = halfObstacle.transform.position.z;
+            if (obstacleZ >= minZ && obstacleZ <= maxZ)
+            {
+                obstacles.Add(halfObstacle);
+            }
+        }
 
         foreach (GameObject obstacle in obstacles)
         {
-            if(Random.value > 0.5f){
+            if (Random.value > 0.5f)
+            {
                 Collider obstacleCollider = obstacle.GetComponent<Collider>();
                 if (obstacleCollider == null) continue;
 

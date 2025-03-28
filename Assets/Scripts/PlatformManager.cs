@@ -18,14 +18,14 @@ public class PlatformManager : MonoBehaviour
     {
 
         // Başlangıç platformunu spawn et
-        platformSpawner.SpawnInitialPlatform(initialPlatformLength);
+        GameObject initialPlatform = platformSpawner.SpawnInitialPlatform(initialPlatformLength);
 
         // İlk platformu spawn et
-        GameObject firstPlatform = platformSpawner.SpawnPlatform(new Vector3(0, 0, initialPlatformLength));
+        GameObject firstPlatform = platformSpawner.SpawnPlatform(new Vector3(0, 0, initialPlatform.transform.position.z + initialPlatform.transform.localScale.z));
         platformQueue.Enqueue(firstPlatform);
 
         // İkinci platformu spawn et
-        GameObject secondPlatform = platformSpawner.SpawnPlatform(new Vector3(0, 0, 200+initialPlatformLength));
+        GameObject secondPlatform = platformSpawner.SpawnPlatform(new Vector3(0, 0, firstPlatform.transform.position.z + firstPlatform.transform.localScale.z));
         platformQueue.Enqueue(secondPlatform);
 
         // Pool'ları başlat
@@ -114,7 +114,7 @@ public class PlatformManager : MonoBehaviour
             GameObject lastPlatform = platformQueue.ToArray()[platformQueue.Count - 1];
 
             // Oyuncu, son platforma yaklaşınca yeni platform spawn et
-            if (playerTransform.position.z >= lastPlatform.transform.position.z - 50)
+            if (playerTransform.position.z >= lastPlatform.transform.position.z - 90)
             {
                 SpawnPlatform();
             }
@@ -124,19 +124,19 @@ public class PlatformManager : MonoBehaviour
     }
 
     void DeactivateOldPlatform()
-{
-    if (platformQueue.Count > 1)
     {
-        GameObject oldPlatform = platformQueue.Peek(); // İlk platformu al
-        float platformLength = oldPlatform.GetComponent<Collider>().bounds.size.z;
-
-        // Oyuncu, platformun sonundan platform uzunluğu kadar uzaklaştığında platformu devre dışı bırak
-        if (playerTransform.position.z >= oldPlatform.transform.position.z + platformLength)
+        if (platformQueue.Count > 1)
         {
-            platformSpawner.SetPlatformActive(oldPlatform, false);
+            GameObject oldPlatform = platformQueue.Peek(); // İlk platformu al
+            float platformLength = oldPlatform.GetComponent<Collider>().bounds.size.z;
+
+            // Oyuncu, platformun sonundan platform uzunluğu kadar uzaklaştığında platformu devre dışı bırak
+            if (playerTransform.position.z >= oldPlatform.transform.position.z + platformLength)
+            {
+                platformSpawner.SetPlatformActive(oldPlatform, false);
+            }
         }
     }
-}
 
     void SpawnObjects(GameObject platform)
     {
