@@ -46,6 +46,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void GamePause()
+    {
+        Time.timeScale = 0f; // Oyunu duraklat
+        // Oyunun duraklatılmasıyla ilgili diğer işlemler (örneğin, UI güncelleme, ses çalma, vb.)
+    }
+
+    public void GameResume()
+    {
+        Time.timeScale = 1f; // Oyunu devam ettir
+        // Oyunun devam etmesiyle ilgili diğer işlemler (örneğin, UI güncelleme, ses çalma, vb.)
+    }
+
     public void RestartGame()
     {
         SceneManager.LoadScene("GameScene");
