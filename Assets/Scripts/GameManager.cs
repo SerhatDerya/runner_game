@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
     public static event Action<int> OnLaneChange; // şerit değişimi için event
 
     [SerializeField] private GameObject gameOverCanvas;
+    [SerializeField] private GameObject gamePauseCanvas;
+    
+    [SerializeField] private GameObject InGameButtons;
 
     void Start()
     {
@@ -40,6 +43,7 @@ public class GameManager : MonoBehaviour
         {
             isGameOver = true;
             gameOverCanvas.SetActive(true);
+            InGameButtons.SetActive(false);
             Debug.Log("Game Over!");
             Time.timeScale = 0f;
             // Oyunun bitmesiyle ilgili diğer işlemler (örneğin, UI güncelleme, ses çalma, vb.)
@@ -49,12 +53,16 @@ public class GameManager : MonoBehaviour
     public void GamePause()
     {
         Time.timeScale = 0f; // Oyunu duraklat
+        InGameButtons.SetActive(false);
+        gamePauseCanvas.SetActive(true);
         // Oyunun duraklatılmasıyla ilgili diğer işlemler (örneğin, UI güncelleme, ses çalma, vb.)
     }
 
     public void GameResume()
     {
         Time.timeScale = 1f; // Oyunu devam ettir
+        InGameButtons.SetActive(true);
+        gamePauseCanvas.SetActive(false);
         // Oyunun devam etmesiyle ilgili diğer işlemler (örneğin, UI güncelleme, ses çalma, vb.)
     }
 
@@ -62,6 +70,7 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("GameScene");
         gameOverCanvas.SetActive(false);
+        gamePauseCanvas.SetActive(false);
         isGameOver = false;
         Time.timeScale = 1f; // Oyunu devam ettir
         // Yeniden başlatma işlemleri (örneğin, sahneyi yeniden yükleme)
@@ -71,6 +80,7 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("MainMenu");
         gameOverCanvas.SetActive(false);
+        gamePauseCanvas.SetActive(false);
         isGameOver = false;
         Time.timeScale = 1f; // Oyunu devam ettir
         // Ana menüye dönme işlemleri (örneğin, sahneyi yeniden yükleme)
