@@ -377,6 +377,7 @@
 "Assets/Scripts/PlatformManager.cs"
 "Assets/Scripts/PlatformSpawner.cs"
 "Assets/Scripts/PlayerMovementController.cs"
+"Assets/Scripts/ScoreManager.cs"
 "Assets/TutorialInfo/Scripts/Readme.cs"
 -langversion:9.0
 /deterministic

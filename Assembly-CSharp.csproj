@@ -71,6 +71,7 @@
     <Compile Include="Assets/Scripts/ObstacleObjectController.cs" />
     <Compile Include="Assets/Scripts/GenericObjectPool.cs" />
     <Compile Include="Assets/Scripts/GameObjectController.cs" />
+    <Compile Include="Assets/Scripts/ScoreManager.cs" />
     <Compile Include="Assets/Scripts/MainMenu.cs" />
     <Compile Include="Assets/TutorialInfo/Scripts/Readme.cs" />
     <Compile Include="Assets/Scripts/CollectiblePool.cs" />

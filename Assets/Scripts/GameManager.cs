@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
+using TMPro;
 using JetBrains.Annotations;
 
 public class GameManager : MonoBehaviour
@@ -13,6 +14,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject gamePauseCanvas;
     
     [SerializeField] private GameObject InGameButtons;
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI highScoreText;
 
     void Start()
     {
@@ -42,6 +45,10 @@ public class GameManager : MonoBehaviour
         if (!isGameOver)
         {
             isGameOver = true;
+            int currentScore = ScoreManager.instance.GetCurrentScore();
+            scoreText.text = currentScore.ToString();
+            int highScore = ScoreManager.instance.GetHighScore();
+            highScoreText.text = "Highest Score : " + highScore.ToString();
             gameOverCanvas.SetActive(true);
             InGameButtons.SetActive(false);
             Debug.Log("Game Over!");
@@ -68,6 +75,10 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
+        if (ScoreManager.instance != null)
+        {
+            ScoreManager.instance.ResetScore();
+        }
         SceneManager.LoadScene("GameScene");
         gameOverCanvas.SetActive(false);
         gamePauseCanvas.SetActive(false);

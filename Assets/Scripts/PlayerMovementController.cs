@@ -15,6 +15,8 @@ public class PlayerMovementController : MonoBehaviour
     private float verticalVelocity = 0f;
     private bool isGrounded;
     private bool isChangingLane = false;
+    private Vector3 lastScoredPosition;
+    private float distanceForScore = 1f; // Add 1 point per meter
     private void OnEnable()
     {
         GameManager.OnLaneChange += UpdateLane;
@@ -28,6 +30,7 @@ public class PlayerMovementController : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        lastScoredPosition = transform.position;
     }
  
     private void Update()
@@ -37,6 +40,14 @@ public class PlayerMovementController : MonoBehaviour
             jumpRequested = true;
         }
         HandleLaneChange();
+        
+        float distanceTraveled = transform.position.z - lastScoredPosition.z;
+        if (distanceTraveled >= distanceForScore && ScoreManager.instance != null)
+        {
+            ScoreManager.instance.AddScoreForDistance(distanceTraveled);
+            lastScoredPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        }
+
     }
  
     private void FixedUpdate()
