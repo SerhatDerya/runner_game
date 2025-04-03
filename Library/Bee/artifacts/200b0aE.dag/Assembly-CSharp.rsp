@@ -379,6 +379,12 @@
 "Assets/Scripts/PlayerAnimationController.cs"
 "Assets/Scripts/PlayerMovementController.cs"
 "Assets/Scripts/ScoreManager.cs"
+"Assets/Scripts/SimpleGemAnimations.cs"
+"Assets/Toon City Pack/Demo/Scripts/BuildingLights.cs"
+"Assets/Toon City Pack/Demo/Scripts/Helicopter.cs"
+"Assets/Toon City Pack/Demo/Scripts/PoliceSiren.cs"
+"Assets/Toon City Pack/Demo/Scripts/StreetLight.cs"
+"Assets/Toon City Pack/Demo/Scripts/TrafficLights.cs"
 "Assets/TutorialInfo/Scripts/Readme.cs"
 -langversion:9.0
 /deterministic

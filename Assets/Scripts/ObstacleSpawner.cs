@@ -63,7 +63,7 @@ public class ObstacleSpawner : BaseSpawner<ObstacleController, ObstaclePool>
                     if (obstacleCollider != null)
                     {
                         float obstacleHeight = obstacleCollider.bounds.size.y;
-                        float spawnHeight = platform.transform.position.y + obstacleHeight / 2f; // Platformun ortasında
+                        float spawnHeight = platform.transform.position.y; // Platformun ortasında
 
                         // Engel pozisyonunu belirle
                         obstacle.transform.position = new Vector3(spawnPoint.x, spawnHeight, spawnPoint.z);

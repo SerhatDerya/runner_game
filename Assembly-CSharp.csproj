@@ -66,24 +66,30 @@
   <ItemGroup>
     <Compile Include="Assets/Scripts/PlayerMovementController.cs" />
     <Compile Include="Assets/Scripts/ObstacleSpawner.cs" />
+    <Compile Include="Assets/Scripts/SimpleGemAnimations.cs" />
     <Compile Include="Assets/Scripts/IPoolable.cs" />
     <Compile Include="Assets/Scripts/ObstacleManager.cs" />
     <Compile Include="Assets/Scripts/ObstacleObjectController.cs" />
     <Compile Include="Assets/Scripts/GenericObjectPool.cs" />
+    <Compile Include="Assets/Toon City Pack/Demo/Scripts/PoliceSiren.cs" />
     <Compile Include="Assets/Scripts/GameObjectController.cs" />
     <Compile Include="Assets/Scripts/ScoreManager.cs" />
     <Compile Include="Assets/Scripts/MainMenu.cs" />
     <Compile Include="Assets/TutorialInfo/Scripts/Readme.cs" />
     <Compile Include="Assets/Scripts/CollectiblePool.cs" />
     <Compile Include="Assets/Scripts/GameManager.cs" />
+    <Compile Include="Assets/Toon City Pack/Demo/Scripts/StreetLight.cs" />
     <Compile Include="Assets/Scripts/PlatformManager.cs" />
     <Compile Include="Assets/Scripts/PlatformSpawner.cs" />
     <Compile Include="Assets/Scripts/CoinPattern.cs" />
+    <Compile Include="Assets/Toon City Pack/Demo/Scripts/TrafficLights.cs" />
     <Compile Include="Assets/Scripts/Platform.cs" />
     <Compile Include="Assets/Scripts/LaneManager.cs" />
     <Compile Include="Assets/Scripts/CollectibleObjectController.cs" />
     <Compile Include="Assets/Scripts/BaseSpawner.cs" />
     <Compile Include="Assets/Scripts/ObstaclePool.cs" />
+    <Compile Include="Assets/Toon City Pack/Demo/Scripts/BuildingLights.cs" />
+    <Compile Include="Assets/Toon City Pack/Demo/Scripts/Helicopter.cs" />
     <Compile Include="Assets/Scripts/CollectibleSpawner.cs" />
     <Compile Include="Assets/Scripts/PlayerAnimationController.cs" />
   </ItemGroup>

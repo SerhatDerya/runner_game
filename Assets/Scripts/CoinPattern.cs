@@ -13,7 +13,7 @@ public class CoinPattern
         return positions;
     }
 
-    public static List<Vector3> GetJumpArcPattern(Vector3 obstaclePosition, float obstacleHeight, int count, float arcHeight, float spacing)
+    public static List<Vector3> GetJumpArcPattern(Vector3 obstaclePosition, int count, float arcHeight, float spacing)
     {
         List<Vector3> positions = new List<Vector3>();
 

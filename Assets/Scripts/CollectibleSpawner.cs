@@ -58,49 +58,51 @@ public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePoo
     }
 
     private void SpawnOverObstacles(GameObject platformObj, Platform platform)
+{
+    GameObject[] halfObstacles = GameObject.FindGameObjectsWithTag("ObstacleHalf");
+
+    // Find obstacles within range of the platform's z position
+    float platformZ = platform.transform.position.z;
+    float minZ = platformZ - 100f;
+    float maxZ = platformZ + 100f;
+
+    List<GameObject> obstacles = new List<GameObject>();
+    foreach (GameObject halfObstacle in halfObstacles)
     {
-        GameObject[] halfObstacles = GameObject.FindGameObjectsWithTag("ObstacleHalf");
-
-        // Find obstacles within range of the platform's z position
-        float platformZ = platform.transform.position.z;
-        float minZ = platformZ - 100f;
-        float maxZ = platformZ + 100f;
-
-        List<GameObject> obstacles = new List<GameObject>();
-        foreach (GameObject halfObstacle in halfObstacles)
+        float obstacleZ = halfObstacle.transform.position.z;
+        if (obstacleZ >= minZ && obstacleZ <= maxZ)
         {
-            float obstacleZ = halfObstacle.transform.position.z;
-            if (obstacleZ >= minZ && obstacleZ <= maxZ)
-            {
-                obstacles.Add(halfObstacle);
-            }
+            obstacles.Add(halfObstacle);
         }
+    }
 
-        foreach (GameObject obstacle in obstacles)
+    foreach (GameObject obstacle in obstacles)
+    {
+        if (Random.value > 0.5f)
         {
-            if (Random.value > 0.5f)
+            Collider obstacleCollider = obstacle.GetComponent<Collider>();
+            if (obstacleCollider == null) continue;
+
+            // Obstacle'ın üst noktasını hesapla
+            float obstacleTopY = obstacleCollider.bounds.max.y;
+            Vector3 obstaclePos = obstacle.transform.position;
+
+            // Spawn pozisyonlarını hesapla
+            List<Vector3> spawnPositions = CoinPattern.GetJumpArcPattern(
+                new Vector3(obstaclePos.x, obstacleTopY, obstaclePos.z), // Yüksekliği obstacle'ın üstüne ayarla
+                coinsPerFormation,
+                arcHeight,
+                spawnDistance
+            );
+
+            // Platformda işgal edilen noktaları kontrol et
+            if (!spawnPositions.Any(p => platform.IsPointOccupied(p)))
             {
-                Collider obstacleCollider = obstacle.GetComponent<Collider>();
-                if (obstacleCollider == null) continue;
-
-                float obstacleHeight = obstacleCollider.bounds.size.y;
-                Vector3 obstaclePos = obstacle.transform.position;
-
-                List<Vector3> spawnPositions = CoinPattern.GetJumpArcPattern(
-                    obstaclePos,
-                    obstacleHeight,
-                    coinsPerFormation,
-                    arcHeight,
-                    spawnDistance
-                );
-
-                if (!spawnPositions.Any(p => platform.IsPointOccupied(p)))
-                {
-                    SpawnFormation(spawnPositions, platform);
-                }
+                SpawnFormation(spawnPositions, platform);
             }
         }
     }
+}
 
     private void SpawnFormation(List<Vector3> positions, Platform platform)
     {

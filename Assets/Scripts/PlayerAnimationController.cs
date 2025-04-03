@@ -21,13 +21,5 @@ public class PlayerAnimationController : MonoBehaviour
         // Zıplama Animasyonu
         animator.SetBool("isJumping", !playerMovement.isGrounded);
 
-        transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
-
     }
-
-    void OnAnimatorIK(int layerIndex)
-    {
-        animator.bodyRotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
-    }
-
 }

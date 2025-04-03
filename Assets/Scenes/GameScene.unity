@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 93d43b027dc267444af7412b8e607dbd, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -601,12 +601,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c87e20b589ba4f159b9be6a84c8e666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 5708890140103101978, guid: fc131c1391dfd4ebfbfa95803ca2bf9b, type: 3}
+  prefab: {fileID: 3525657451764015072, guid: d4c8945ca733245da9def70475f39c92, type: 3}
   initialPoolSize: 50
   expandAmount: 10
-  obstacleFullPrefab: {fileID: 3582724681414385418, guid: fc131c1391dfd4ebfbfa95803ca2bf9b,
+  obstacleFullPrefab: {fileID: 8231525881579637801, guid: 8c3fe4d555e594d6285560a2c0f1010a,
     type: 3}
-  obstacleHalfPrefab: {fileID: 3582724681414385418, guid: 3a412e7224c424170a1f374e45568b88,
+  obstacleHalfPrefab: {fileID: 7486716826048944953, guid: 54c34ff5ddbc645f784afb0b61df7840,
     type: 3}
   fullObstacleProbability: 0.6
 --- !u!4 &164895136
@@ -2073,7 +2073,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43b8d199600754f06b1fba78411b02e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 5830087824166244136, guid: a08ef0cd798b04644b1b6c9e305bb9d4, type: 3}
+  prefab: {fileID: -764680605864405441, guid: e367c1f5a1c5c4f59bff6d461ae1934a, type: 3}
   initialPoolSize: 30
   expandAmount: 10
 --- !u!4 &903851069
