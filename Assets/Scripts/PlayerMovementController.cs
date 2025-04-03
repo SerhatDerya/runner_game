@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
  
 public class PlayerMovementController : MonoBehaviour
@@ -13,10 +14,13 @@ public class PlayerMovementController : MonoBehaviour
     private Rigidbody rb;
     private int currentLaneIndex;
     private float verticalVelocity = 0f;
-    private bool isGrounded;
+    public bool isGrounded { get; private set; } // Değişken dışarıdan sadece okunabilir
+
     private bool isChangingLane = false;
     private Vector3 lastScoredPosition;
     private float distanceForScore = 1f; // Add 1 point per meter
+    public float startDelay = 2f; // Kaç saniye bekleyeceğini belirle
+    private bool canMove = false;
     private void OnEnable()
     {
         GameManager.OnLaneChange += UpdateLane;
@@ -29,6 +33,7 @@ public class PlayerMovementController : MonoBehaviour
  
     private void Start()
     {
+        StartCoroutine(StartDelay());
         rb = GetComponent<Rigidbody>();
         lastScoredPosition = transform.position;
     }
@@ -54,8 +59,19 @@ public class PlayerMovementController : MonoBehaviour
     {
         Move();
     }
+
+    private IEnumerator StartDelay()
+    {
+        forwardSpeed = 0; // Başlangıçta hızı 0 yap
+        yield return new WaitForSeconds(startDelay); // Belirtilen süre kadar bekle
+        forwardSpeed = 15f; // Sonra normal hızına getir
+        canMove = true; // Hareket etmeye başlasın
+    }
+    
     private void Move()
     {
+        if (!canMove) return;
+        
         float height = GetComponent<Collider>().bounds.size.y;
         isGrounded = Physics.Raycast(transform.position, Vector3.down, (height / 2) + 0.1f, groundLayerMask);
  
