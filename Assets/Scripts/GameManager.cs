@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject InGameButtons;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI highScoreText;
+    [SerializeField] private TextMeshProUGUI gameOverCoinsText;
 
     void Start()
     {
@@ -48,6 +49,12 @@ public class GameManager : MonoBehaviour
             int currentScore = ScoreManager.instance.GetCurrentScore();
             scoreText.text = currentScore.ToString();
             int highScore = ScoreManager.instance.GetHighScore();
+
+            if (CoinManager.instance != null && gameOverCoinsText != null)
+            {
+                gameOverCoinsText.text = CoinManager.instance.GetCurrentCoins().ToString();
+            }
+
             highScoreText.text = "Highest Score : " + highScore.ToString();
             gameOverCanvas.SetActive(true);
             InGameButtons.SetActive(false);
@@ -79,6 +86,12 @@ public class GameManager : MonoBehaviour
         {
             ScoreManager.instance.ResetScore();
         }
+
+        if (CoinManager.instance != null)
+        {
+            CoinManager.instance.ResetSessionCoins();
+        }
+
         SceneManager.LoadScene("GameScene");
         gameOverCanvas.SetActive(false);
         gamePauseCanvas.SetActive(false);
