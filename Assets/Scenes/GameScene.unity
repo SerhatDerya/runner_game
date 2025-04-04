@@ -604,10 +604,13 @@ MonoBehaviour:
   prefab: {fileID: 3525657451764015072, guid: d4c8945ca733245da9def70475f39c92, type: 3}
   initialPoolSize: 50
   expandAmount: 10
-  obstacleFullPrefab: {fileID: 8231525881579637801, guid: 8c3fe4d555e594d6285560a2c0f1010a,
-    type: 3}
-  obstacleHalfPrefab: {fileID: 7486716826048944953, guid: 54c34ff5ddbc645f784afb0b61df7840,
-    type: 3}
+  obstacleFullPrefabs:
+  - {fileID: 8231525881579637801, guid: d4c8945ca733245da9def70475f39c92, type: 3}
+  - {fileID: 3363743196637915491, guid: 2e48943f77b6a4b638258fd41bee3518, type: 3}
+  - {fileID: 2839398050524196472, guid: 28f5b9d4d6d17458e955291ed7c1f107, type: 3}
+  obstacleHalfPrefabs:
+  - {fileID: 7486716826048944953, guid: 54c34ff5ddbc645f784afb0b61df7840, type: 3}
+  - {fileID: 8219983529717725861, guid: ddb89c8b71be64fd9a356697205661d1, type: 3}
   fullObstacleProbability: 0.6
 --- !u!4 &164895136
 Transform:
