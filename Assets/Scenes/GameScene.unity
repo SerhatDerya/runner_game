@@ -435,8 +435,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   obstacleSpawner: {fileID: 1884927513}
   collectibleSpawner: {fileID: 1120419625}
+  buildingSpawner: {fileID: 2004791577}
   collectiblePool: {fileID: 903851068}
   obstaclePool: {fileID: 164895135}
+  buildingPool: {fileID: 412535640}
   platformSpawner: {fileID: 892565123}
   playerTransform: {fileID: 1771853624}
 --- !u!4 &76236635
@@ -1555,6 +1557,61 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 372349920}
   m_CullTransparentMesh: 1
+--- !u!1 &412535639
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 412535641}
+  - component: {fileID: 412535640}
+  m_Layer: 0
+  m_Name: BuildingPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &412535640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 412535639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce17b163711e44cf092729ab9a31abb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildingPrefabs:
+  - {fileID: 2571504398995303138, guid: 047710307e400484cbebd0fba6e7b478, type: 3}
+  - {fileID: 6719888361061052548, guid: 6995f29d1b1504eb4a2e65a3b1410a01, type: 3}
+  - {fileID: 7051800037286115493, guid: 1523fca6749f44d3787791173bcfcb75, type: 3}
+  - {fileID: 5720013252100257546, guid: 5ab9b28f66d684954b529ff573c3fb51, type: 3}
+  - {fileID: 7531719450239269777, guid: 04851d7270634400a930a3f10615a413, type: 3}
+  - {fileID: 6913838050020503594, guid: bd7edd5bba7dc4bd194c20fa361be2d6, type: 3}
+  - {fileID: 1214593064065632294, guid: 8d6339db997ca442490bfe246049ba2a, type: 3}
+  - {fileID: 9060964938156956912, guid: 97dbaac80c5504d26b6c7915f4feb94f, type: 3}
+  - {fileID: 8492517402437331215, guid: d32162db9530b4873a03beedd214c92e, type: 3}
+  poolSizePerPrefab: 25
+--- !u!4 &412535641
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 412535639}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.7073722, y: 3.2617903, z: 10.653118}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &455671635 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2c0c00a6e03c84a9b839002df322fc58,
@@ -2466,13 +2523,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.208219, y: -0, z: -0, w: 0.97808224}
-  m_LocalPosition: {x: 0, y: 2.2979999, z: -3.3399963}
+  m_LocalRotation: {x: 0.20035976, y: -0, z: -0, w: 0.97972244}
+  m_LocalPosition: {x: 0, y: 2.94, z: -3.97}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1771853624}
-  m_LocalEulerAnglesHint: {x: 24.036, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 23.116, y: 0, z: 0}
 --- !u!1 &1040481603
 GameObject:
   m_ObjectHideFlags: 0
@@ -4334,6 +4391,60 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 455671638}
   m_SourcePrefab: {fileID: 100100000, guid: 2c0c00a6e03c84a9b839002df322fc58, type: 3}
+--- !u!1 &2004791576
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2004791578}
+  - component: {fileID: 2004791577}
+  m_Layer: 0
+  m_Name: BuildingSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2004791577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2004791576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ae01019824147f2af709343c774080, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPool: {fileID: 412535640}
+  laneManager: {fileID: 1443303116}
+  milestoneInterval: 30
+  spawnChance: 0.75
+  buildingOffset: 3
+  buildingsPerSide: 10
+  distanceFromEdge: 10
+  minDistanceBetweenBuildings: 7
+  maxDistanceFromPlatform: 20
+  maxXRange: 400
+--- !u!4 &2004791578
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2004791576}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.7073722, y: 3.2617903, z: 10.653118}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2009248160
 GameObject:
   m_ObjectHideFlags: 0
@@ -4532,3 +4643,5 @@ SceneRoots:
   - {fileID: 1251158319}
   - {fileID: 858318201}
   - {fileID: 608209515}
+  - {fileID: 2004791578}
+  - {fileID: 412535641}

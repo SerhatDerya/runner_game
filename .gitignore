@@ -1,0 +1,46 @@
+# Unity - Gerekli .gitignore içeriği
+
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+
+# User-specific
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+
+# OS
+.DS_Store
+*.apk
+*.aab
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# Crash logs
+sysinfo.txt
+
+# Unity Cache Server
+.cache/
+
+# Unity Cloud Build
+*.symbol_upload
+
+# JetBrains Rider
+.idea/
+*.sln.iml

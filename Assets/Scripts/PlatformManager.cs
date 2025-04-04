@@ -5,11 +5,13 @@ public class PlatformManager : MonoBehaviour
 {
     public ObstacleSpawner obstacleSpawner;
     public CollectibleSpawner collectibleSpawner;
+    public BuildingSpawner buildingSpawner;
     public CollectiblePool collectiblePool;
     public ObstaclePool obstaclePool;
+    public BuildingPool buildingPool;
     public PlatformSpawner platformSpawner;
     public Transform playerTransform;
-    private int platformCount = 2;
+    private int platformCount = 6;
     private int initialPlatformLength = 50;
 
     private Queue<GameObject> platformQueue = new();
@@ -47,6 +49,15 @@ public class PlatformManager : MonoBehaviour
             Debug.LogError("ObstaclePool reference is not set!");
         }
 
+        if (buildingPool != null)
+        {
+            buildingPool.InitializePool();
+        }
+        else
+        {
+            Debug.LogError("BuildingPool reference is not set!");
+        }
+
         // İlk iki platforma obje spawn et
         SpawnObjects(firstPlatform);
         SpawnObjects(secondPlatform);
@@ -68,6 +79,7 @@ public class PlatformManager : MonoBehaviour
             GameObject oldPlatform = platformQueue.Dequeue();
             obstacleSpawner.ClearObjects(oldPlatform);
             collectibleSpawner.ClearObjects(oldPlatform);
+            buildingSpawner.ClearObjects(oldPlatform);
 
             Platform platform = oldPlatform.GetComponent<Platform>();
             if (platform != null)
@@ -114,7 +126,7 @@ public class PlatformManager : MonoBehaviour
             GameObject lastPlatform = platformQueue.ToArray()[platformQueue.Count - 1];
 
             // Oyuncu, son platforma yaklaşınca yeni platform spawn et
-            if (playerTransform.position.z >= lastPlatform.transform.position.z - 90)
+            if (playerTransform.position.z >= lastPlatform.transform.position.z - 900)
             {
                 SpawnPlatform();
             }
@@ -131,7 +143,7 @@ public class PlatformManager : MonoBehaviour
             float platformLength = oldPlatform.GetComponent<Collider>().bounds.size.z;
 
             // Oyuncu, platformun sonundan platform uzunluğu kadar uzaklaştığında platformu devre dışı bırak
-            if (playerTransform.position.z >= oldPlatform.transform.position.z + platformLength)
+            if (playerTransform.position.z >= oldPlatform.transform.position.z + platformLength + 1000)
             {
                 platformSpawner.SetPlatformActive(oldPlatform, false);
             }
@@ -142,5 +154,6 @@ public class PlatformManager : MonoBehaviour
     {
         obstacleSpawner.SpawnObjects(platform);
         collectibleSpawner.SpawnObjects(platform);
+        buildingSpawner.SpawnObjects(platform);
     }
 }
