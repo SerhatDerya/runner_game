@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2255136392261107709}
   - component: {fileID: 4084533759881743159}
   - component: {fileID: -8696957684565017488}
+  - component: {fileID: -4973503687882199362}
   m_Layer: 0
   m_Name: cb-apartment-A
   m_TagString: Untagged
@@ -26,13 +27,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2571504398995303138}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2255136392261107709
 MeshFilter:
@@ -100,3 +101,16 @@ MonoBehaviour:
   windowMaterialIndex: 0
   lightColor: {r: 0.41509432, g: 0.36251774, b: 0.14293341, a: 1}
   areLightsOn: 0
+--- !u!114 &-4973503687882199362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2571504398995303138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff74764f73b944cb38c08a387897b477, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  duration: 1

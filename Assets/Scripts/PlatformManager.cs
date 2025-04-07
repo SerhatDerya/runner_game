@@ -126,7 +126,7 @@ public class PlatformManager : MonoBehaviour
             GameObject lastPlatform = platformQueue.ToArray()[platformQueue.Count - 1];
 
             // Oyuncu, son platforma yaklaşınca yeni platform spawn et
-            if (playerTransform.position.z >= lastPlatform.transform.position.z - 900)
+            if (playerTransform.position.z >= lastPlatform.transform.position.z - 190)
             {
                 SpawnPlatform();
             }
@@ -143,7 +143,7 @@ public class PlatformManager : MonoBehaviour
             float platformLength = oldPlatform.GetComponent<Collider>().bounds.size.z;
 
             // Oyuncu, platformun sonundan platform uzunluğu kadar uzaklaştığında platformu devre dışı bırak
-            if (playerTransform.position.z >= oldPlatform.transform.position.z + platformLength + 1000)
+            if (playerTransform.position.z >= oldPlatform.transform.position.z + platformLength + 100)
             {
                 platformSpawner.SetPlatformActive(oldPlatform, false);
             }
