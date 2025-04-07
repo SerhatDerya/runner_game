@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    AudioManager audioManager;
     private bool isGameOver = false;
     public static event Action<int> OnLaneChange; // şerit değişimi için event
 
@@ -34,6 +35,8 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
     }
 
     public void GameStart()
@@ -45,6 +48,7 @@ public class GameManager : MonoBehaviour
     {
         if (!isGameOver)
         {
+            audioManager.PlaySFX(audioManager.pain);
             isGameOver = true;
             int currentScore = ScoreManager.instance.GetCurrentScore();
             scoreText.text = currentScore.ToString();

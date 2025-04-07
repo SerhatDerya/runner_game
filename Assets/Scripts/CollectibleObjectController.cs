@@ -4,6 +4,7 @@ public class CollectibleController : GameObjectController
 {    
     [SerializeField] private int coinValue = 1;
     [SerializeField] private ParticleSystem collectEffect;
+    AudioManager audioManager;
     protected override void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -14,6 +15,9 @@ public class CollectibleController : GameObjectController
             {
                 CoinManager.instance.AddCoins(coinValue);
             }
+
+            audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+            audioManager.PlaySFX(audioManager.coin);
             
             // Play collection effect if available
             if (collectEffect != null)

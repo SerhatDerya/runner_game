@@ -7,6 +7,7 @@ TagManager:
   - ObstacleFull
   - ObstacleHalf
   - Collectible
+  - Audio
   layers:
   - Default
   - TransparentFX

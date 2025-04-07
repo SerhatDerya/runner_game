@@ -3,6 +3,7 @@ using UnityEngine;
  
 public class PlayerMovementController : MonoBehaviour
 {
+    AudioManager audioManager;
     public float forwardSpeed = 15f;
     public float laneChangeSpeed = 15f;
     public float jumpForce = 9.8f;
@@ -37,14 +38,35 @@ public class PlayerMovementController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         lastScoredPosition = transform.position;
     }
+
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
  
     private void Update()
     {
+        int horizontalInput = 0;
         if(Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             jumpRequested = true;
+            audioManager.PlaySFX(audioManager.jump);
         }
-        HandleLaneChange();
+        else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        {
+            horizontalInput = -1;
+            audioManager.PlaySFX(audioManager.swipe);
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+        {
+            horizontalInput = 1;
+            audioManager.PlaySFX(audioManager.swipe);
+        }
+        else
+        {
+            horizontalInput = 0;
+        }
+        HandleLaneChange(horizontalInput);
         
         float distanceTraveled = transform.position.z - lastScoredPosition.z;
         if (distanceTraveled >= distanceForScore && ScoreManager.instance != null)
@@ -110,10 +132,9 @@ public class PlayerMovementController : MonoBehaviour
     }
  
  
-    private void HandleLaneChange()
+    private void HandleLaneChange(int horizontalInput)
     {
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
- 
+       
         if (!isChangingLane) // Sadece yeni bir input olduğunda çalışır
         {
             if (horizontalInput > 0 && currentLaneIndex < LaneManager.instance.laneCount - 1)
