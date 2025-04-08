@@ -35,7 +35,7 @@ public class ScoreManager : MonoBehaviour
     {
         UpdateScoreUI();
     }
-    
+
     public void AddScore(int points)
     {
         currentScore += Mathf.RoundToInt(points * scoreMultiplier);

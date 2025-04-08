@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
                 gameOverCoinsText.text = CoinManager.instance.GetCurrentCoins().ToString();
             }
 
-            highScoreText.text = "Highest Score : " + highScore.ToString();
+            highScoreText.text = "Highest Score: " + highScore.ToString();
             gameOverCanvas.SetActive(true);
             InGameButtons.SetActive(false);
             Debug.Log("Game Over!");
