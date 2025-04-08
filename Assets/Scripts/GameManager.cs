@@ -3,6 +3,7 @@ using System;
 using UnityEngine.SceneManagement;
 using TMPro;
 using JetBrains.Annotations;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,11 +14,17 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject gameOverCanvas;
     [SerializeField] private GameObject gamePauseCanvas;
-    
+    [SerializeField] private PlayerMovementController playerController;
     [SerializeField] private GameObject InGameButtons;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI highScoreText;
     [SerializeField] private TextMeshProUGUI gameOverCoinsText;
+    public static event Action OnGameOver;
+
+    public static void TriggerGameOver()
+    {
+        OnGameOver?.Invoke();
+    }
 
     void Start()
     {
@@ -63,9 +70,17 @@ public class GameManager : MonoBehaviour
             gameOverCanvas.SetActive(true);
             InGameButtons.SetActive(false);
             Debug.Log("Game Over!");
-            Time.timeScale = 0f;
-            // Oyunun bitmesiyle ilgili diğer işlemler (örneğin, UI güncelleme, ses çalma, vb.)
+            playerController.SwitchToFallenCollider();
+            TriggerGameOver();
+            StartCoroutine(FreezeTimeAfterDelay(1.0f));
         }
+    }
+
+    private IEnumerator FreezeTimeAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay); // bu Time.timeScale = 1 olduğu sürece çalışır
+        Time.timeScale = 0f;
+        Debug.Log("Game Over - Time frozen.");
     }
 
     public void GamePause()

@@ -20,6 +20,21 @@ public class PlayerAnimationController : MonoBehaviour
 
         // Zıplama Animasyonu
         animator.SetBool("isJumping", !playerMovement.isGrounded);
-
     }
+
+    private void OnEnable()
+    {
+        GameManager.OnGameOver += HandleGameOver;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnGameOver -= HandleGameOver;
+    }
+
+    private void HandleGameOver()
+    {
+        animator.SetBool("isGameOver", true);
+    }
+
 }
