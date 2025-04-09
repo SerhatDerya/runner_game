@@ -22,8 +22,9 @@ public class ResponsiveUI : MonoBehaviour
         RectTransform rectTransformCoin = coinImage.GetComponent<RectTransform>();
         RectTransform rectTransformCoinText = coinText.GetComponent<RectTransform>();
         RectTransform rectTransformPauseButton = pauseButton.GetComponent<RectTransform>();
-
-        // Çentik yüksekliğini hesapla
+       
+        if(Screen.height > safeArea.yMax){
+            // Çentik yüksekliğini hesapla
         float safeAreaOffset = Screen.height - safeArea.yMax; // Çentik yüksekliği
         // Score Text'i ekranın üst ortasına sabitle
         rectTransformScore.anchoredPosition = new Vector2(0, -safeAreaOffset - 75); // 50 piksel aşağı kaydır
@@ -33,6 +34,7 @@ public class ResponsiveUI : MonoBehaviour
         rectTransformCoinText.anchoredPosition = new Vector2(rectTransformCoinText.anchoredPosition.x, -safeAreaOffset - 55);
         // Pause Button'u ekranın sağ üstüne sabitle
         rectTransformPauseButton.anchoredPosition = new Vector2(rectTransformPauseButton.anchoredPosition.x, -safeAreaOffset - 75);
+        }
     }
 
 }
