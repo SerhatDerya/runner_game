@@ -27,7 +27,7 @@ namespace Benjathemaker
         public float scaleLerpSpeed = 1f; // Speed of scaling transition
         private float scaleTimer;
 
-        void Start()
+        void OnEnable()
         {
             initialScale = transform.localScale;
             initialPosition = transform.position;

@@ -1,17 +1,17 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class BuildingSpawner : BaseSpawner<BuildingSpawner, BuildingPool>
+public class BuildingSpawner : MonoBehaviour
 {
+    [SerializeField] private string buildingTag = "Building"; // Pool'dan alınacak prefab etiketi
     [SerializeField] private float buildingOffset = 3f; // Binaların platform kenarına uzaklığı
     [SerializeField] private int buildingsPerSide = 3; // Her kenarda kaç bina spawn edileceği
     [SerializeField] private float distanceFromEdge = 10f; // Platformun sağ ve sol kenarından uzaklık
     [SerializeField] private float minDistanceBetweenBuildings = 7f; // Binalar arasındaki minimum mesafe
     [SerializeField] private float maxXRange = 60f; // Binaların X eksenindeki geniş yayılma aralığı (Daha geniş bir range)
-
+    private Queue<GameObject> activeBuildings = new Queue<GameObject>();
     private List<Vector3> spawnedPositions = new List<Vector3>(); // Çakışmayı önlemek için kullanılan pozisyon listesi
-
-    public override void SpawnObjects(GameObject platformObj)
+    public void SpawnBuildings(GameObject platformObj)
     {
         Platform platform = platformObj.GetComponent<Platform>();
         if (platform == null)
@@ -115,52 +115,45 @@ public class BuildingSpawner : BaseSpawner<BuildingSpawner, BuildingPool>
 
     private void SpawnBuildingAt(Vector3 position)
     {
-        GameObject building = GetObjectFromPool();
+        GameObject building = PoolManager.Instance.Get(buildingTag); // Havuzdan bina al
         if (building != null)
         {
             building.transform.position = position;
-            building.SetActive(true);
-            activeObjects.Enqueue(building);
+            building.SetActive(true); // Bina aktif et
+
+            // SpawnScaleEffect scriptini tetikle
+            SpawnScaleEffect scaleEffect = building.GetComponent<SpawnScaleEffect>();
+            if (scaleEffect != null)
+            {
+                scaleEffect.enabled = false; // Script'i sıfırla
+                scaleEffect.enabled = true; // Script'i yeniden etkinleştir
+            }
         }
     }
 
-    protected override GameObject GetObjectFromPool()
+    public void ClearBuildings(GameObject platform)
     {
-        if (objectPool == null)
-        {
-            Debug.LogError("ObjectPool is missing!");
-            return null;
-        }
-
-        return objectPool.GetGameObject();
-    }
-
-    protected override void ReturnObjectToPool(GameObject obj)
-    {
-        obj.SetActive(false);
-        objectPool.ReturnGameObject(obj);
-    }
-
-    public override void ClearObjects(GameObject platform)
-    {
-        if (platform == null) return;
-
         float platformMinZ = platform.transform.position.z - platform.transform.localScale.z / 2;
         float platformMaxZ = platform.transform.position.z + platform.transform.localScale.z / 2;
 
-        int count = activeObjects.Count;
+        int count = activeBuildings.Count;
         for (int i = 0; i < count; i++)
         {
-            GameObject obj = activeObjects.Dequeue();
-            if (obj.transform.position.z >= platformMinZ &&
-                obj.transform.position.z <= platformMaxZ)
+            GameObject building = activeBuildings.Dequeue();
+            if (building.transform.position.z >= platformMinZ && building.transform.position.z <= platformMaxZ)
             {
-                ReturnObjectToPool(obj);
+                building.SetActive(false);
+                PoolManager.Instance.Return("Building", building); // Havuzlama mantığına göre geri döndür
             }
             else
             {
-                activeObjects.Enqueue(obj);
+                activeBuildings.Enqueue(building);
             }
         }
+    }
+
+    public void ReturnBuildingToPool(GameObject building)
+    {
+        PoolManager.Instance.Return(buildingTag, building); // Binaları havuza geri gönder
     }
 }

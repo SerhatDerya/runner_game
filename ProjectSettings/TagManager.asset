@@ -8,6 +8,7 @@ TagManager:
   - ObstacleHalf
   - Collectible
   - Audio
+  - Building
   layers:
   - Default
   - TransparentFX

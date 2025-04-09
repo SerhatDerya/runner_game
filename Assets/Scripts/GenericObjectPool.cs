@@ -1,76 +1,28 @@
+// ObjectPool.cs
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class GenericObjectPool<T> : MonoBehaviour where T : Component, IPoolable
+public class GenericObjectPool<T> where T : class
 {
-    [Header("Pool Settings")]
-    [SerializeField] protected T prefab;
-    [SerializeField] private int initialPoolSize = 50;
-    [SerializeField] private int expandAmount = 10;
+    private readonly Queue<T> pool = new();
+    private readonly Func<T> factoryMethod;
 
-    protected Queue<T> objectPool = new Queue<T>();
-    private int activeCount = 0;
-
-    private void Awake()
+    public GenericObjectPool(Func<T> factoryMethod, int initialSize)
     {
-        if (prefab == null)
+        this.factoryMethod = factoryMethod;
+        for (int i = 0; i < initialSize; i++)
         {
-            Debug.LogError("Prefab not assigned in GenericObjectPool!");
-            return;
+            pool.Enqueue(factoryMethod());
         }
-
-        InitializePool();
     }
 
-    public void InitializePool()
+    public T Get()
     {
-        for (int i = 0; i < initialPoolSize; i++)
-        {
-            AddNewObjectToPool();
-        }
-        //Debug.Log($"Pool initialized with {initialPoolSize} items");
+        return pool.Count > 0 ? pool.Dequeue() : factoryMethod();
     }
 
-    public virtual void AddNewObjectToPool()
+    public void Return(T obj)
     {
-        
-        T obj = Instantiate(prefab);
-        obj.gameObject.SetActive(false);
-        obj.transform.SetParent(this.transform); // Organize hierarchy
-        objectPool.Enqueue(obj);
-    }
-
-    public T GetObject()
-    {
-        if (objectPool.Count == 0)
-        {
-            //Debug.Log("Pool empty, expanding...");
-            ExpandPool();
-        }
-
-        T obj = objectPool.Dequeue();
-        obj.gameObject.SetActive(true);
-        activeCount++;
-        
-        //Debug.Log($"Object taken from pool. Active: {activeCount}, Inactive: {objectPool.Count}");
-        return obj;
-    }
-
-    private void ExpandPool()
-    {
-        for (int i = 0; i < expandAmount; i++)
-        {
-            AddNewObjectToPool();
-        }
-        //Debug.Log($"Pool expanded. New size: {objectPool.Count + activeCount}");
-    }
-
-    public void ReturnToPool(T obj)
-    {
-        obj.gameObject.SetActive(false);
-        objectPool.Enqueue(obj);
-        activeCount--;
-        
-        //Debug.Log($"Object returned to pool. Active: {activeCount}, Inactive: {objectPool.Count}");
+        pool.Enqueue(obj);
     }
 }

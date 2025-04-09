@@ -1,15 +1,18 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UIElements;
 
-public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePool>
+public class CollectibleSpawner : MonoBehaviour
 {
+    [SerializeField] private string poolTag = "Collectible"; // Havuz etiketi
     [SerializeField] private int formationCount = 10;
     [SerializeField] private float spawnDistance = 2f;
     [SerializeField] private int coinsPerFormation = 5;
     [SerializeField] private float arcHeight = 2f;
-
-    public override void SpawnObjects(GameObject platformObj)
+    [SerializeField] private LaneManager laneManager;
+    private Queue<GameObject> activeObjects = new();
+    public void SpawnCollectibles(GameObject platformObj)
     {
         Platform platform = platformObj.GetComponent<Platform>();
         if (platform == null)
@@ -48,9 +51,20 @@ public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePoo
                 spawnDistance
             );
 
+            // Platformda işgal edilen noktaları kontrol et
             if (!positions.Any(p => platform.IsPointOccupied(p)))
             {
                 SpawnFormation(positions, platform);
+
+                // İşaretleme
+                foreach (Vector3 pos in positions)
+                {
+                    if (!platform.IsPointOccupied(pos))
+                    {
+                        // Spawn işlemi
+                        platform.MarkPointOccupied(pos);
+                    }
+                }
             }
         }
 
@@ -58,91 +72,90 @@ public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePoo
     }
 
     private void SpawnOverObstacles(GameObject platformObj, Platform platform)
-{
-    GameObject[] halfObstacles = GameObject.FindGameObjectsWithTag("ObstacleHalf");
-
-    // Find obstacles within range of the platform's z position
-    float platformZ = platform.transform.position.z;
-    float minZ = platformZ - 100f;
-    float maxZ = platformZ + 100f;
-
-    List<GameObject> obstacles = new List<GameObject>();
-    foreach (GameObject halfObstacle in halfObstacles)
     {
-        float obstacleZ = halfObstacle.transform.position.z;
-        if (obstacleZ >= minZ && obstacleZ <= maxZ)
+        GameObject[] halfObstacles = GameObject.FindGameObjectsWithTag("ObstacleHalf");
+
+        // Find obstacles within range of the platform's z position
+        float platformZ = platform.transform.position.z;
+        float minZ = platformZ - 100f;
+        float maxZ = platformZ + 100f;
+
+        List<GameObject> obstacles = new List<GameObject>();
+        foreach (GameObject halfObstacle in halfObstacles)
         {
-            obstacles.Add(halfObstacle);
-        }
-    }
-
-    foreach (GameObject obstacle in obstacles)
-    {
-        if (Random.value > 0.5f)
-        {
-            Collider obstacleCollider = obstacle.GetComponent<Collider>();
-            if (obstacleCollider == null) continue;
-
-            // Obstacle'ın üst noktasını hesapla
-            float obstacleTopY = obstacleCollider.bounds.max.y;
-            Vector3 obstaclePos = obstacle.transform.position;
-
-            // Spawn pozisyonlarını hesapla
-            List<Vector3> spawnPositions = CoinPattern.GetJumpArcPattern(
-                new Vector3(obstaclePos.x, obstacleTopY, obstaclePos.z), // Yüksekliği obstacle'ın üstüne ayarla
-                coinsPerFormation,
-                arcHeight,
-                spawnDistance
-            );
-
-            // Platformda işgal edilen noktaları kontrol et
-            if (!spawnPositions.Any(p => platform.IsPointOccupied(p)))
+            float obstacleZ = halfObstacle.transform.position.z;
+            if (obstacleZ >= minZ && obstacleZ <= maxZ)
             {
-                SpawnFormation(spawnPositions, platform);
+                obstacles.Add(halfObstacle);
+            }
+        }
+
+        foreach (GameObject obstacle in obstacles)
+        {
+            if (Random.value > 0.5f)
+            {
+                Collider obstacleCollider = obstacle.GetComponent<Collider>();
+                if (obstacleCollider == null) continue;
+
+                // Obstacle'ın üst noktasını hesapla
+                float obstacleTopY = obstacleCollider.bounds.max.y;
+                Vector3 obstaclePos = obstacle.transform.position;
+
+                // Spawn pozisyonlarını hesapla
+                List<Vector3> spawnPositions = CoinPattern.GetJumpArcPattern(
+                    new Vector3(obstaclePos.x, obstacleTopY, obstaclePos.z), // Yüksekliği obstacle'ın üstüne ayarla
+                    coinsPerFormation,
+                    arcHeight,
+                    spawnDistance
+                );
+
+                // Platformda işgal edilen noktaları kontrol et
+                if (!spawnPositions.Any(p => platform.IsPointOccupied(p)))
+                {
+                    SpawnFormation(spawnPositions, platform);
+
+                    // İşaretleme
+                    foreach (Vector3 pos in spawnPositions)
+                    {
+                        if (!platform.IsPointOccupied(pos))
+                        {
+                            // Spawn işlemi
+                            platform.MarkPointOccupied(pos);
+                        }
+                    }
+                }
             }
         }
     }
-}
 
     private void SpawnFormation(List<Vector3> positions, Platform platform)
     {
         foreach (Vector3 pos in positions)
         {
-            GameObject collectible = GetObjectFromPool();
+            GameObject collectible = PoolManager.Instance.Get(poolTag); // PoolManager'dan collectible al
             if (collectible != null)
             {
                 collectible.transform.position = pos;
-                collectible.SetActive(true);  // Objeyi aktif hale getir
+                collectible.SetActive(true); // Objeyi aktif hale getir
                 activeObjects.Enqueue(collectible);
-                platform.MarkPointOccupied(pos);
+                if (!platform.IsPointOccupied(pos))
+                {
+                    // Spawn işlemi
+                    platform.MarkPointOccupied(pos);
+                }
             }
         }
     }
 
-    protected override GameObject GetObjectFromPool()
-    {
-        if (objectPool == null)
-        {
-            Debug.LogError("ObjectPool reference is not set!");
-            return null;
-        }
-        return objectPool.GetGameObject();
-    }
-
-    protected override void ReturnObjectToPool(GameObject obj)
-    {
-        if (objectPool == null)
-        {
-            Debug.LogError("ObjectPool reference is not set!");
-            return;
-        }
-        obj.SetActive(false); // Objeyi pasif hale getir
-        objectPool.ReturnGameObject(obj);  // Havuzdaki objeyi geri ver
-    }
-
-    public override void ClearObjects(GameObject platform)
+    public void ClearCollectibles(GameObject platform)
     {
         if (platform == null) return;
+
+        Platform platformScript = platform.GetComponent<Platform>();
+        if (platformScript != null)
+        {
+            platformScript.ClearOccupiedPoints();
+        }
 
         float platformMinZ = platform.transform.position.z - platform.transform.localScale.z / 2;
         float platformMaxZ = platform.transform.position.z + platform.transform.localScale.z / 2;
@@ -154,12 +167,21 @@ public class CollectibleSpawner : BaseSpawner<CollectibleSpawner, CollectiblePoo
             if (obj.transform.position.z >= platformMinZ &&
                 obj.transform.position.z <= platformMaxZ)
             {
-                ReturnObjectToPool(obj);
+                PoolManager.Instance.Return(obj); // Objeyi havuza geri gönder
             }
             else
             {
                 activeObjects.Enqueue(obj);
             }
+        }
+    }
+
+    public void ClearAllCollectibles()
+    {
+        while (activeObjects.Count > 0)
+        {
+            GameObject obj = activeObjects.Dequeue();
+            PoolManager.Instance.Return(obj); // Objeyi havuza geri gönder
         }
     }
 }

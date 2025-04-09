@@ -1,13 +1,18 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
-public class ObstacleSpawner : BaseSpawner<ObstacleController, ObstaclePool>
+public class ObstacleSpawner : MonoBehaviour
 {
-    private Dictionary<float, int> laneObstacleCounts = new Dictionary<float, int>(); // Her lane'deki engel sayısını takip eder
+    [SerializeField] private List<string> poolTags = new List<string> { "ObstacleHalf", "ObstacleFull" };
+    [SerializeField] private LaneManager laneManager;
+    [SerializeField] private float spawnChance = 0.75f;
 
-    public override void SpawnObjects(GameObject platformObj)
+    private Queue<GameObject> activeObstacles = new();
+    private Dictionary<float, int> laneObstacleCounts = new();
+    private Dictionary<float, int> zPosObstacleCounts = new();
+    public void SpawnObstacles(GameObject platformObj)
     {
-        // Null kontrolü
         if (platformObj == null)
         {
             Debug.LogError("Platform object is null!");
@@ -23,64 +28,64 @@ public class ObstacleSpawner : BaseSpawner<ObstacleController, ObstaclePool>
 
         List<Vector3> availablePoints = platform.GetAvailablePoints();
 
-        // Eğer availablePoints boşsa, spawn işlemini durdur
         if (availablePoints == null || availablePoints.Count == 0)
         {
             Debug.LogWarning("No available points on the platform for obstacle spawning!");
             return;
         }
 
-        // Her lane'deki engel sayısını sıfırla
-        laneObstacleCounts.Clear();
-        
-        // Her Z pozisyonundaki engel sayısını tutacak dictionary
-        Dictionary<float, int> zPosObstacleCounts = new Dictionary<float, int>();
-
-        // Mevcut platformda aktif olan tüm objeleri kontrol et ve onları spawn et
-        foreach (Vector3 spawnPoint in availablePoints)
+        foreach (Vector3 spawnPoint in availablePoints.ToList())
         {
-            if (Random.value <= spawnChance) // Rastgele spawn şansı
+            if (Random.value <= spawnChance && !platform.IsPointOccupied(spawnPoint))
             {
                 float laneX = spawnPoint.x;
                 float laneZ = spawnPoint.z;
-                
-                // Aynı Z ekseninde (milestone'da) 4'ten fazla engel olup olmadığını kontrol et
+
+                // Aynı Z ekseninde çok fazla engel olup olmadığını kontrol et
                 if (!zPosObstacleCounts.ContainsKey(laneZ))
                 {
                     zPosObstacleCounts[laneZ] = 0;
                 }
-                else if (zPosObstacleCounts[laneZ] >= (laneManager.laneCount-1))
+                else if (zPosObstacleCounts[laneZ] >= (laneManager.laneCount - 1))
                 {
-                    // Bu Z pozisyonunda (şerit sayısı - 1) engel varsa, yeni engel ekleme
                     continue;
                 }
 
-                GameObject obstacle = GetObjectFromPool(); // Pool'dan engel al
+                // Rastgele bir engel etiketi seç
+                string selectedTag = poolTags[Random.Range(0, poolTags.Count)];
+                GameObject obstacle = PoolManager.Instance.Get(selectedTag);
+
                 if (obstacle != null)
                 {
-                    // Engelin Collider'ını al ve spawn yüksekliğini hesapla
+                    // Platformun üst yüzey yüksekliğini hesapla
+                    Collider platformCollider = platformObj.GetComponent<Collider>();
                     Collider obstacleCollider = obstacle.GetComponent<Collider>();
-                    if (obstacleCollider != null)
-                    {
-                        float obstacleHeight = obstacleCollider.bounds.size.y;
-                        float spawnHeight = platform.transform.position.y; // Platformun ortasında
 
-                        // Engel pozisyonunu belirle
+                    if (platformCollider != null && obstacleCollider != null)
+                    {
+                        float platformTopY = platformCollider.bounds.max.y;
+                        float obstacleBottomY = obstacleCollider.bounds.min.y;
+
+                        // Engel pozisyonunu ayarla
+                        float spawnHeight = platformTopY - obstacleBottomY;
                         obstacle.transform.position = new Vector3(spawnPoint.x, spawnHeight, spawnPoint.z);
                         obstacle.SetActive(true);
-                        activeObjects.Enqueue(obstacle); // Aktif engeller listesine ekle
+                        activeObstacles.Enqueue(obstacle);
 
                         // Platformdaki bu noktayı işaretle
-                        platform.MarkPointOccupied(spawnPoint);
+                        if (!platform.IsPointOccupied(spawnPoint))
+                        {
+                            // Spawn işlemi
+                            platform.MarkPointOccupied(spawnPoint);
+                        }
+                        availablePoints.Remove(spawnPoint);
 
-                        // Bu lane'deki engel sayısını artır
+                        // Şerit ve Z ekseni sayacı güncelle
                         if (!laneObstacleCounts.ContainsKey(laneX))
                         {
                             laneObstacleCounts[laneX] = 0;
                         }
                         laneObstacleCounts[laneX]++;
-                        
-                        // Bu Z pozisyonundaki engel sayısını artır
                         zPosObstacleCounts[laneZ]++;
                     }
                 }
@@ -88,57 +93,40 @@ public class ObstacleSpawner : BaseSpawner<ObstacleController, ObstaclePool>
         }
     }
 
-    public override void ClearObjects(GameObject platform)
+    public void ClearObstacles(GameObject platform)
     {
-        if (platform == null) return;
-
-        // Platformun sınırlarını al
-        float platformMinZ = platform.transform.position.z - platform.transform.localScale.z / 2;
-        float platformMaxZ = platform.transform.position.z + platform.transform.localScale.z / 2;
-
-        int itemsToProcess = activeObjects.Count;
-        for (int i = 0; i < itemsToProcess; i++)
+        Platform platformScript = platform.GetComponent<Platform>();
+        if (platformScript != null)
         {
-            GameObject obj = activeObjects.Dequeue();
-            if (obj != null && obj.transform.position.z >= platformMinZ &&
-                obj.transform.position.z <= platformMaxZ)
+            platformScript.ClearOccupiedPoints();
+        }
+
+        float minZ = platform.transform.position.z - platform.transform.localScale.z / 2;
+        float maxZ = platform.transform.position.z + platform.transform.localScale.z / 2;
+
+        int count = activeObstacles.Count;
+        for (int i = 0; i < count; i++)
+        {
+            GameObject obj = activeObstacles.Dequeue();
+            if (obj.transform.position.z >= minZ && obj.transform.position.z <= maxZ)
             {
-                // Platformdan dışarıda olanları pool'a geri al
-                ReturnObjectToPool(obj);
+                obj.SetActive(false);
+                PoolManager.Instance.Return(obj);
             }
-            else if (obj != null)
+            else
             {
-                activeObjects.Enqueue(obj);
+                activeObstacles.Enqueue(obj);
             }
         }
     }
 
-    protected override GameObject GetObjectFromPool()
+    public void ClearAllObstacles()
     {
-        if (objectPool == null)
+        while (activeObstacles.Count > 0)
         {
-            Debug.LogError("ObjectPool reference is not set!");
-            return null;
+            GameObject obj = activeObstacles.Dequeue();
+            obj.SetActive(false);
+            PoolManager.Instance.Return(obj);
         }
-
-        GameObject obstacle = objectPool.GetGameObject(); // Havuzdan bir engel al
-
-        if (obstacle == null)
-        {
-            Debug.LogWarning("No available obstacles in the pool!");
-        }
-
-        return obstacle;
-    }
-
-    protected override void ReturnObjectToPool(GameObject obj)
-    {
-        if (objectPool == null)
-        {
-            Debug.LogError("ObjectPool reference is not set!");
-            return;
-        }
-        obj.SetActive(false); // Objeyi pasif hale getir
-        objectPool.ReturnGameObject(obj); // Havuzdaki objeyi geri ver
     }
 }
