@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI highScoreText;
     [SerializeField] private TextMeshProUGUI gameOverCoinsText;
+    public static Action OnPlayerStartedRunning;
 
     public static void TriggerGameOver()
     {
@@ -79,7 +80,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator FreezeTimeAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(delay); 
+        yield return new WaitForSeconds(delay);
     }
 
     public void GamePause()
@@ -98,6 +99,11 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
+        CameraManager camManager = FindObjectOfType<CameraManager>();
+        if (camManager != null)
+        {
+            camManager.ResetCameraSettings();
+        }
         if (ScoreManager.instance != null)
         {
             ScoreManager.instance.ResetScore();

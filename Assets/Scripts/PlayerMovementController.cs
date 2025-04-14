@@ -125,7 +125,7 @@ public class PlayerMovementController : MonoBehaviour
 
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         Move();
     }
@@ -136,6 +136,8 @@ public class PlayerMovementController : MonoBehaviour
         yield return new WaitForSeconds(startDelay); // Belirtilen süre kadar bekle
         forwardSpeed = originalForwardSpeed; // Sonra normal hızına getir
         canMove = true; // Hareket etmeye başlasın
+
+        GameManager.OnPlayerStartedRunning?.Invoke();
     }
 
     private void Move()

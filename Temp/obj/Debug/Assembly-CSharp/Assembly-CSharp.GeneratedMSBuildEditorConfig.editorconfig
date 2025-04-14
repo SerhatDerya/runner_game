@@ -1,5 +1,8 @@
 is_global = true
 build_property.RootNamespace = 
-build_property.ProjectDir = /Users/serhatderya/Documents/roofstacks/runner_game/
+build_property.ProjectDir = /Users/ayseelifcelik/Documents/GitHub/runner_game/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.CsWinRTUseWindowsUIXamlProjections = false
+build_property.EffectiveAnalysisLevelStyle = 
+build_property.EnableCodeStyleSeverity = 
