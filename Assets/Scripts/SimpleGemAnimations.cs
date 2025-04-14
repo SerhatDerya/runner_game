@@ -27,6 +27,8 @@ namespace Benjathemaker
         public float scaleLerpSpeed = 1f; // Speed of scaling transition
         private float scaleTimer;
 
+        private bool isPaused = false;
+
         void OnEnable()
         {
             initialScale = transform.localScale;
@@ -35,10 +37,35 @@ namespace Benjathemaker
             // Adjust start and end scale based on initial scale
             startScale = initialScale;
             endScale = initialScale * (endScale.magnitude / startScale.magnitude);
+            
+            // Subscribe to game pause/resume events
+            GameManager.OnGamePause += HandleGamePause;
+            GameManager.OnGameResume += HandleGameResume;
+        }
+
+        void OnDisable()
+        {
+            // Unsubscribe from game events
+            GameManager.OnGamePause -= HandleGamePause;
+            GameManager.OnGameResume -= HandleGameResume;
+        }
+
+        private void HandleGamePause()
+        {
+            isPaused = true;
+        }
+
+        private void HandleGameResume()
+        {
+            isPaused = false;
         }
 
         void Update()
         {
+            // Skip animation updates if game is paused
+            if (isPaused)
+                return;
+
             if (isRotating)
             {
                 Vector3 rotationVector = new Vector3(

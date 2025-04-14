@@ -11,6 +11,9 @@ public class GameManager : MonoBehaviour
     AudioManager audioManager;
     private bool isGameOver = false;
     public static event Action<int> OnLaneChange; // şerit değişimi için event
+    public static event Action OnGamePause;  // Added event for game pause
+    public static event Action OnGameResume; // Added event for game resume
+    public static event Action OnGameOver;   // Existing event 
 
     [SerializeField] private GameObject gameOverCanvas;
     [SerializeField] private GameObject gamePauseCanvas;
@@ -19,7 +22,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI highScoreText;
     [SerializeField] private TextMeshProUGUI gameOverCoinsText;
-    public static event Action OnGameOver;
 
     public static void TriggerGameOver()
     {
@@ -71,32 +73,27 @@ public class GameManager : MonoBehaviour
             InGameButtons.SetActive(false);
             Debug.Log("Game Over!");
             playerController.SwitchToFallenCollider();
-            TriggerGameOver();
-            StartCoroutine(FreezeTimeAfterDelay(1.0f));
+            TriggerGameOver(); // Call StopMovement on the player controller
         }
     }
 
     private IEnumerator FreezeTimeAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(delay); // bu Time.timeScale = 1 olduğu sürece çalışır
-        Time.timeScale = 0f;
-        Debug.Log("Game Over - Time frozen.");
+        yield return new WaitForSeconds(delay); 
     }
 
     public void GamePause()
     {
-        Time.timeScale = 0f; // Oyunu duraklat
+        OnGamePause?.Invoke();
         InGameButtons.SetActive(false);
         gamePauseCanvas.SetActive(true);
-        // Oyunun duraklatılmasıyla ilgili diğer işlemler (örneğin, UI güncelleme, ses çalma, vb.)
     }
 
     public void GameResume()
     {
-        Time.timeScale = 1f; // Oyunu devam ettir
+        OnGameResume?.Invoke();
         InGameButtons.SetActive(true);
         gamePauseCanvas.SetActive(false);
-        // Oyunun devam etmesiyle ilgili diğer işlemler (örneğin, UI güncelleme, ses çalma, vb.)
     }
 
     public void RestartGame()
@@ -115,8 +112,6 @@ public class GameManager : MonoBehaviour
         gameOverCanvas.SetActive(false);
         gamePauseCanvas.SetActive(false);
         isGameOver = false;
-        Time.timeScale = 1f; // Oyunu devam ettir
-        // Yeniden başlatma işlemleri (örneğin, sahneyi yeniden yükleme)
     }
 
     public void GoToMainMenu()
@@ -125,7 +120,5 @@ public class GameManager : MonoBehaviour
         gameOverCanvas.SetActive(false);
         gamePauseCanvas.SetActive(false);
         isGameOver = false;
-        Time.timeScale = 1f; // Oyunu devam ettir
-        // Ana menüye dönme işlemleri (örneğin, sahneyi yeniden yükleme)
     }
 }

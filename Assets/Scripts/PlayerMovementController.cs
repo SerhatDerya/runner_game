@@ -5,6 +5,7 @@ public class PlayerMovementController : MonoBehaviour
 {
     AudioManager audioManager;
     public float forwardSpeed = 15f;
+    private float originalForwardSpeed = 15f; // Store the original speed
     public float laneChangeSpeed = 15f;
     public float jumpForce = 9.8f;
     public float gravity = 9.8f;
@@ -24,23 +25,50 @@ public class PlayerMovementController : MonoBehaviour
     private float distanceForScore = 1f; // Add 1 point per meter
     public float startDelay = 2f; // Kaç saniye bekleyeceğini belirle
     private bool canMove = false;
+    private bool isPaused = false; // Track if the game is paused
+    
     private void OnEnable()
     {
         GameManager.OnLaneChange += UpdateLane;
-        GameManager.OnLaneChange += UpdateLane;
         GameManager.OnGameOver += StopMovement;
+        GameManager.OnGamePause += PauseMovement; // New subscription for pause event
+        GameManager.OnGameResume += ResumeMovement; // New subscription for resume event
     }
 
     private void OnDisable()
     {
         GameManager.OnLaneChange -= UpdateLane;
-        GameManager.OnLaneChange -= UpdateLane;
         GameManager.OnGameOver -= StopMovement;
+        GameManager.OnGamePause -= PauseMovement; // Clean up pause event subscription
+        GameManager.OnGameResume -= ResumeMovement; // Clean up resume event subscription
     }
+    
     private void StopMovement()
     {
         forwardSpeed = 0f;
         jumpRequested = false;
+    }
+    
+    // New method to pause movement
+    private void PauseMovement()
+    {
+        if (!isPaused)
+        {
+            isPaused = true;
+            originalForwardSpeed = forwardSpeed;
+            forwardSpeed = 0f;
+            jumpRequested = false;
+        }
+    }
+    
+    // New method to resume movement
+    private void ResumeMovement()
+    {
+        if (isPaused)
+        {
+            isPaused = false;
+            forwardSpeed = originalForwardSpeed;
+        }
     }
 
     public void SwitchToFallenCollider()
@@ -51,9 +79,10 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(StartDelay());
         rb = GetComponent<Rigidbody>();
         lastScoredPosition = transform.position;
+        originalForwardSpeed = forwardSpeed; // Store the initial speed
+        StartCoroutine(StartDelay());
     }
 
     private void Awake()
@@ -63,6 +92,8 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Update()
     {
+        if (isPaused) return; // Skip input handling if game is paused
+        
         int horizontalInput = 0;
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
@@ -103,13 +134,13 @@ public class PlayerMovementController : MonoBehaviour
     {
         forwardSpeed = 0; // Başlangıçta hızı 0 yap
         yield return new WaitForSeconds(startDelay); // Belirtilen süre kadar bekle
-        forwardSpeed = 15f; // Sonra normal hızına getir
+        forwardSpeed = originalForwardSpeed; // Sonra normal hızına getir
         canMove = true; // Hareket etmeye başlasın
     }
 
     private void Move()
     {
-        if (!canMove) return;
+        if (!canMove || isPaused) return; // Skip movement if game is not ready or is paused
 
         float height = GetCurrentHeight();
         isGrounded = Physics.Raycast(transform.position, Vector3.down, (height / 2) + 0.1f, groundLayerMask);
@@ -160,6 +191,7 @@ public class PlayerMovementController : MonoBehaviour
 
     private void HandleLaneChange(int horizontalInput)
     {
+        if (isPaused) return; // Skip lane change if game is paused
 
         if (!isChangingLane) // Sadece yeni bir input olduğunda çalışır
         {
