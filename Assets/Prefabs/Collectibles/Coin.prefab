@@ -140,6 +140,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d381691a2ffad49debbd2722acfafdd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coinValue: 1
+  collectEffect: {fileID: 0}
 --- !u!114 &473517969319311112
 MonoBehaviour:
   m_ObjectHideFlags: 0

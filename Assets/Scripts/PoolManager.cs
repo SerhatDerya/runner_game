@@ -14,6 +14,7 @@ public class PoolManager : MonoBehaviour
     public static PoolManager Instance;
 
     [SerializeField] private List<PoolConfig> poolConfigs;
+    private Dictionary<string, GameObjectFactory> factories;
 
     private Dictionary<string, List<Queue<GameObject>>> poolDictionary;
 
@@ -26,88 +27,92 @@ public class PoolManager : MonoBehaviour
     }
 
     private void InitializePools()
+{
+    poolDictionary = new Dictionary<string, List<Queue<GameObject>>>();
+    factories = new Dictionary<string, GameObjectFactory>();
+
+    foreach (var config in poolConfigs)
     {
-        poolDictionary = new Dictionary<string, List<Queue<GameObject>>>();
+        List<Queue<GameObject>> prefabPools = new List<Queue<GameObject>>();
 
-        foreach (var config in poolConfigs)
+        foreach (var prefab in config.prefabs)
         {
-            List<Queue<GameObject>> prefabPools = new List<Queue<GameObject>>();
+            Queue<GameObject> objectPool = new Queue<GameObject>();
 
-            foreach (var prefab in config.prefabs)
+            for (int i = 0; i < config.size; i++)
             {
-                Queue<GameObject> objectPool = new Queue<GameObject>();
+                GameObject obj = Instantiate(prefab);
+                obj.SetActive(false);
 
-                for (int i = 0; i < config.size; i++)
+                PoolTag poolTag = obj.GetComponent<PoolTag>();
+                if (poolTag == null)
                 {
-                    GameObject obj = Instantiate(prefab);
-                    obj.SetActive(false);
-
-                    PoolTag poolTag = obj.GetComponent<PoolTag>();
-                    if (poolTag == null)
-                    {
-                        poolTag = obj.AddComponent<PoolTag>();
-                    }
-
-                    // Etiketi ekle
-                    if (!poolTag.poolTags.Contains(config.tag))
-                    {
-                        poolTag.poolTags.Add(config.tag);
-                    }
-
-                    objectPool.Enqueue(obj);
+                    poolTag = obj.AddComponent<PoolTag>();
                 }
 
-                prefabPools.Add(objectPool);
+                // Etiketi ekle
+                if (!poolTag.poolTags.Contains(config.tag))
+                {
+                    poolTag.poolTags.Add(config.tag);
+                }
+
+                objectPool.Enqueue(obj);
             }
 
-            poolDictionary[config.tag] = prefabPools;
+            prefabPools.Add(objectPool);
+        }
+
+        poolDictionary[config.tag] = prefabPools;
+
+        // Factory oluştur ve ekle (tüm prefab listesini kullanarak)
+        if (config.prefabs.Count > 0)
+        {
+            factories[config.tag] = new GameObjectFactory(config.prefabs); // Tüm prefab listesini factory'ye ver
         }
     }
+}
 
     public GameObject Get(string tag)
+{
+    // Havuzun varlığını kontrol et
+    if (!poolDictionary.ContainsKey(tag))
     {
-        if (!poolDictionary.ContainsKey(tag))
-        {
-            Debug.LogWarning("Pool with tag " + tag + " doesn't exist.");
-            return null;
-        }
-
-        List<Queue<GameObject>> prefabPools = poolDictionary[tag];
-
-        // Her prefab havuzunu sırayla kontrol et
-        foreach (var prefabPool in prefabPools)
-        {
-            if (prefabPool.Count > 0)
-            {
-                GameObject obj = prefabPool.Dequeue();
-                obj.SetActive(true);
-                return obj;
-            }
-        }
-
-        // Eğer tüm havuzlar boşsa, yeni prefab instantiate et
-        var config = poolConfigs.Find(c => c.tag == tag);
-        if (config == null || config.prefabs.Count == 0)
-        {
-            Debug.LogError($"No config found for tag: {tag}");
-            return null;
-        }
-
-        // Rastgele bir prefab seç ve instantiate et
-        GameObject prefab = config.prefabs[Random.Range(0, config.prefabs.Count)];
-        GameObject newObj = Instantiate(prefab);
-
-        PoolTag poolTag = newObj.GetComponent<PoolTag>() ?? newObj.AddComponent<PoolTag>();
-
-        // Etiketi ekle
-        if (!poolTag.poolTags.Contains(tag))
-        {
-            poolTag.poolTags.Add(tag);
-        }
-
-        newObj.SetActive(true);
-        return newObj;
+        Debug.LogWarning($"Pool with tag {tag} doesn't exist.");
+        return null;
     }
+
+    List<Queue<GameObject>> prefabPools = poolDictionary[tag];
+
+    // Her prefab havuzunu sırayla kontrol et
+    foreach (var prefabPool in prefabPools)
+    {
+        if (prefabPool.Count > 0)
+        {
+            GameObject obj = prefabPool.Dequeue();
+            obj.SetActive(true);
+            return obj;
+        }
+    }
+
+    // Eğer tüm havuzlar boşsa, factory kullanarak yeni bir nesne oluştur
+    if (!factories.ContainsKey(tag))
+    {
+        Debug.LogError($"No factory found for tag: {tag}");
+        return null;
+    }
+
+    GameObject newObj = factories[tag].Create(); // Factory'den yeni nesne oluştur
+    newObj.SetActive(true);
+
+    // PoolTag bileşenini kontrol et ve etiketi ekle
+    PoolTag poolTag = newObj.GetComponent<PoolTag>() ?? newObj.AddComponent<PoolTag>();
+    if (!poolTag.poolTags.Contains(tag))
+    {
+        poolTag.poolTags.Add(tag);
+    }
+
+    return newObj;
+}
 
     public void Return(string tag, GameObject obj)
     {
@@ -155,5 +160,5 @@ public class PoolManager : MonoBehaviour
             Debug.LogWarning("GameObject has no tags in PoolTag component. Object will be deactivated but not destroyed.");
             obj.SetActive(false); // Obje yok edilmez, sadece devre dışı bırakılır
         }
-    }    
+    }
 }

@@ -80,6 +80,7 @@
     <Compile Include="Assets/Scripts/ScoreManager.cs" />
     <Compile Include="Assets/Scripts/MainMenu.cs" />
     <Compile Include="Assets/TutorialInfo/Scripts/Readme.cs" />
+    <Compile Include="Assets/Scripts/CollectibleFactory.cs" />
     <Compile Include="Assets/Scripts/GameManager.cs" />
     <Compile Include="Assets/Scripts/PoolManager.cs" />
     <Compile Include="Assets/Toon City Pack/Demo/Scripts/StreetLight.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Assets/Scripts/PlatformManager.cs" />
     <Compile Include="Assets/Scripts/PlatformSpawner.cs" />
     <Compile Include="Assets/Scripts/CoinPattern.cs" />
+    <Compile Include="Assets/Scripts/BuildingFactory.cs" />
     <Compile Include="Assets/Scripts/CoinManager.cs" />
     <Compile Include="Assets/Toon City Pack/Demo/Scripts/TrafficLights.cs" />
     <Compile Include="Assets/Scripts/CameraManager.cs" />
@@ -98,6 +100,7 @@
     <Compile Include="Assets/Scripts/CollectibleObjectController.cs" />
     <Compile Include="Assets/Scripts/GameObjectFactory.cs" />
     <Compile Include="Assets/LeanTween/Framework/LeanTween.cs" />
+    <Compile Include="Assets/Scripts/ObstacleFactory.cs" />
     <Compile Include="Assets/LeanTween/Framework/LeanTweenExt.cs" />
     <Compile Include="Assets/Scripts/PoolTag.cs" />
     <Compile Include="Assets/Scripts/BaseSpawner.cs" />
