@@ -1815,11 +1815,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameOverCanvas: {fileID: 1336230183}
   gamePauseCanvas: {fileID: 1251158315}
+  gameOverCanvasContent: {fileID: 0}
   playerController: {fileID: 1771853625}
   InGameButtons: {fileID: 394323179}
   scoreText: {fileID: 1285901874}
   highScoreText: {fileID: 878977328}
   gameOverCoinsText: {fileID: 1711909860}
+  gameOverAnimationDuration: 0.5
 --- !u!4 &512764611
 Transform:
   m_ObjectHideFlags: 0
@@ -6479,7 +6481,6 @@ SceneRoots:
   - {fileID: 1443303117}
   - {fileID: 76236635}
   - {fileID: 512764611}
-  - {fileID: 1336230187}
   - {fileID: 296218466}
   - {fileID: 892565124}
   - {fileID: 394323183}
@@ -6494,3 +6495,4 @@ SceneRoots:
   - {fileID: 827294813}
   - {fileID: 1631217151}
   - {fileID: 1127575830}
+  - {fileID: 1336230187}

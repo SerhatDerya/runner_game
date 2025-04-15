@@ -17,11 +17,13 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject gameOverCanvas;
     [SerializeField] private GameObject gamePauseCanvas;
+    [SerializeField] private GameObject gameOverCanvasContent;
     [SerializeField] private PlayerMovementController playerController;
     [SerializeField] private GameObject InGameButtons;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI highScoreText;
     [SerializeField] private TextMeshProUGUI gameOverCoinsText;
+    [SerializeField] private float gameOverAnimationDuration = 0.5f;
     public static Action OnPlayerStartedRunning;
 
     public static void TriggerGameOver()
@@ -70,12 +72,39 @@ public class GameManager : MonoBehaviour
             }
 
             highScoreText.text = "Highest Score: " + highScore.ToString();
+            
+            // Initialize game over canvas with zero scale before showing it
+            gameOverCanvasContent.transform.localScale = Vector3.zero;
             gameOverCanvas.SetActive(true);
+            // Add half second delay before starting animation
+            StartCoroutine((AnimateGameOverCanvas(0.2f)));           
             InGameButtons.SetActive(false);
             Debug.Log("Game Over!");
             playerController.SwitchToFallenCollider();
             TriggerGameOver(); // Call StopMovement on the player controller
         }
+    }
+    
+    private IEnumerator AnimateGameOverCanvas(float delay)
+    {
+        float elapsedTime = 0f;
+        yield return new WaitForSeconds(delay);
+        while (elapsedTime < gameOverAnimationDuration)
+        {
+            // Calculate the current scale based on animation progress
+            float t = elapsedTime / gameOverAnimationDuration;
+            float scaleValue = Mathf.SmoothStep(0, 1, t);
+            
+            // Apply the scale
+            gameOverCanvasContent.transform.localScale = new Vector3(scaleValue, scaleValue, scaleValue);
+            
+            // Update time
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        
+        // Ensure final scale is exactly 1
+        gameOverCanvasContent.transform.localScale = Vector3.one;
     }
 
     private IEnumerator FreezeTimeAfterDelay(float delay)
