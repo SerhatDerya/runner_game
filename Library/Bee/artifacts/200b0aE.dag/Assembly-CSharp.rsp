@@ -394,7 +394,6 @@
 "Assets/Scripts/PlatformManager.cs"
 "Assets/Scripts/PlatformSpawner.cs"
 "Assets/Scripts/PlayerAnimationController.cs"
-"Assets/Scripts/PlayerController.cs"
 "Assets/Scripts/PlayerMovementController.cs"
 "Assets/Scripts/PoolManager.cs"
 "Assets/Scripts/PoolTag.cs"

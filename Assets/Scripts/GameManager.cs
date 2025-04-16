@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI highScoreText;
     [SerializeField] private TextMeshProUGUI gameOverCoinsText;
-    [SerializeField] private float gameOverAnimationDuration = 0.5f;
+    [SerializeField] private float gameOverAnimationDuration = 0.25f;
     public static Action OnPlayerStartedRunning;
 
     public static void TriggerGameOver()
@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
             gameOverCanvasContent.transform.localScale = Vector3.zero;
             gameOverCanvas.SetActive(true);
             // Add half second delay before starting animation
-            StartCoroutine((AnimateGameOverCanvas(0.2f)));           
+            StartCoroutine((AnimateGameOverCanvas(0.3f)));           
             InGameButtons.SetActive(false);
             Debug.Log("Game Over!");
             playerController.SwitchToFallenCollider();
@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour
             gameOverCanvasContent.transform.localScale = new Vector3(scaleValue, scaleValue, scaleValue);
             
             // Update time
-            elapsedTime += Time.deltaTime;
+            elapsedTime += Time.unscaledDeltaTime;
             yield return null;
         }
         

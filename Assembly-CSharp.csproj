@@ -101,7 +101,6 @@
     <Compile Include="Assets/Scripts/GameObjectFactory.cs" />
     <Compile Include="Assets/LeanTween/Framework/LeanTween.cs" />
     <Compile Include="Assets/Scripts/ObstacleFactory.cs" />
-    <Compile Include="Assets/Scripts/PlayerController.cs" />
     <Compile Include="Assets/LeanTween/Framework/LeanTweenExt.cs" />
     <Compile Include="Assets/Scripts/PoolTag.cs" />
     <Compile Include="Assets/Scripts/BaseSpawner.cs" />
