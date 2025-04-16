@@ -125,7 +125,7 @@ public class PlayerMovementController : MonoBehaviour
 
     }
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         Move();
     }
@@ -163,12 +163,12 @@ public class PlayerMovementController : MonoBehaviour
         // Yerçekimi uygula
         if (!isGrounded)
         {
-            verticalVelocity -= gravity * fallGravityMultiplier * Time.deltaTime;
+            verticalVelocity -= gravity * fallGravityMultiplier * Time.fixedDeltaTime;
         }
 
         // Hareket
         Vector3 moveDirection = new Vector3(0, verticalVelocity, forwardSpeed);
-        transform.position += moveDirection * Time.deltaTime;
+        transform.position += moveDirection * Time.fixedDeltaTime;
 
         // Zemin Kontrolü
         if (isGrounded)
@@ -221,7 +221,9 @@ public class PlayerMovementController : MonoBehaviour
             transform.position.z
         );
 
-        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * laneChangeSpeed);
+        // Sadece x pozisyonunu Lerp ile değiştir, diğer eksenlere dokunma
+        float newX = Mathf.Lerp(transform.position.x, targetPosition.x, Time.deltaTime * laneChangeSpeed);
+        transform.position = new Vector3(newX, transform.position.y, transform.position.z);
     }
 
     private void UpdateLane(int newLaneIndex)
