@@ -64,10 +64,11 @@
     <Analyzer Include="/Applications/Unity/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets/Scripts/PlayerMovementController.cs" />
     <Compile Include="Assets/Scripts/ObstacleSpawner.cs" />
+    <Compile Include="Assets/Scripts/Player Scripts/PlayerMover.cs" />
     <Compile Include="Assets/LeanTween/Framework/LTDescr.cs" />
     <Compile Include="Assets/Scripts/SimpleGemAnimations.cs" />
+    <Compile Include="Assets/Scripts/Player Scripts/PlayerStateHandler.cs" />
     <Compile Include="Assets/Scripts/ResponsiveUI.cs" />
     <Compile Include="Assets/LeanTween/Framework/LeanTest.cs" />
     <Compile Include="Assets/Scripts/IPoolable.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Assets/Toon City Pack/Demo/Scripts/PoliceSiren.cs" />
     <Compile Include="Assets/Scripts/GameObjectController.cs" />
     <Compile Include="Assets/Scripts/ScoreManager.cs" />
+    <Compile Include="Assets/Scripts/Player Scripts/ScoreTracker.cs" />
     <Compile Include="Assets/Scripts/MainMenu.cs" />
     <Compile Include="Assets/TutorialInfo/Scripts/Readme.cs" />
     <Compile Include="Assets/Scripts/CollectibleFactory.cs" />
@@ -99,18 +101,21 @@
     <Compile Include="Assets/Scripts/AudioManager.cs" />
     <Compile Include="Assets/Scripts/CollectibleObjectController.cs" />
     <Compile Include="Assets/Scripts/GameObjectFactory.cs" />
+    <Compile Include="Assets/Scripts/Player Scripts/PlayerController.cs" />
+    <Compile Include="Assets/Scripts/Player Scripts/ColliderSwitcher.cs" />
     <Compile Include="Assets/LeanTween/Framework/LeanTween.cs" />
     <Compile Include="Assets/Scripts/ObstacleFactory.cs" />
     <Compile Include="Assets/LeanTween/Framework/LeanTweenExt.cs" />
     <Compile Include="Assets/Scripts/PoolTag.cs" />
     <Compile Include="Assets/Scripts/BaseSpawner.cs" />
     <Compile Include="Assets/LeanTween/Framework/LeanSmooth.cs" />
+    <Compile Include="Assets/Scripts/Player Scripts/PlayerAnimationController.cs" />
     <Compile Include="Assets/Toon City Pack/Demo/Scripts/BuildingLights.cs" />
     <Compile Include="Assets/LeanTween/Framework/LeanAudio.cs" />
     <Compile Include="Assets/Toon City Pack/Demo/Scripts/Helicopter.cs" />
     <Compile Include="Assets/LeanTween/Framework/LTDescrOptional.cs" />
     <Compile Include="Assets/Scripts/CollectibleSpawner.cs" />
-    <Compile Include="Assets/Scripts/PlayerAnimationController.cs" />
+    <Compile Include="Assets/Scripts/Player Scripts/IPlayerMovement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets/TextMesh Pro/Shaders/TMPro.cginc" />

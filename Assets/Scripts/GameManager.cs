@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject gameOverCanvas;
     [SerializeField] private GameObject gamePauseCanvas;
     [SerializeField] private GameObject gameOverCanvasContent;
-    [SerializeField] private PlayerMovementController playerController;
+    [SerializeField] private PlayerController playerController;
     [SerializeField] private GameObject InGameButtons;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI highScoreText;
@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
             InGameButtons.SetActive(false);
             Debug.Log("Game Over!");
             playerController.SwitchToFallenCollider();
-            TriggerGameOver(); // Call StopMovement on the player controller
+            playerController.OnGameOver();
         }
     }
     
@@ -142,7 +142,7 @@ public class GameManager : MonoBehaviour
         {
             CoinManager.instance.ResetSessionCoins();
         }
-
+        
         SceneManager.LoadScene("GameScene");
         gameOverCanvas.SetActive(false);
         gamePauseCanvas.SetActive(false);
