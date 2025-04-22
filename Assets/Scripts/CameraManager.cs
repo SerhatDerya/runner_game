@@ -53,7 +53,6 @@ public class CameraManager : MonoBehaviour
     // Oyuncu koşmaya başladığında çağrılan metot
     public void SwitchToFollowCam()
     {
-        Debug.Log("SwitchToFollowCam tetiklendi");
         playerFollowCam.Priority = 15;
         frontCam.Priority = 5;
     }
@@ -61,8 +60,6 @@ public class CameraManager : MonoBehaviour
     // Game Over olduğunda çalışacak metot:
     public void SwitchToGameOverCam()
     {
-        Debug.Log("SwitchToGameOverCam tetiklendi");
-
         // GameOver kamerasına yüksek öncelik ver
         gameOverCam.Priority = gameOverPriority;
         frontCam.Priority = 5;
@@ -73,10 +70,7 @@ public class CameraManager : MonoBehaviour
         CinemachineFramingTransposer framing = gameOverCam.GetCinemachineComponent<CinemachineFramingTransposer>();
         if (framing != null)
         {
-            // Örneğin; oyuncuya yakın olmak için Z ekseninde -10'dan -4'e,
-            // yukarıdan bakmak için Y ekseninde 5'ten 3'e ayarlıyoruz.
             framing.m_TrackedObjectOffset = new Vector3(0f, 3f, -4f);
-            Debug.Log("GameOver kamera offset ayarlandı: " + framing.m_TrackedObjectOffset);
         }
         else
         {

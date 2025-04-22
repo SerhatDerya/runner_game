@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class PlayerMover : MonoBehaviour, IPlayerMovement
 {
-    public float forwardSpeed = 15f;
+    private float forwardSpeed;
+    [SerializeField] private float defaultForwardSpeed = 15f;
     public float laneChangeSpeed = 15f;
     public float jumpForce = 9.8f;
     public float gravity = 9.8f;
@@ -97,20 +98,17 @@ public class PlayerMover : MonoBehaviour, IPlayerMovement
         float newX = Mathf.Lerp(transform.position.x, targetPosition.x, Time.fixedDeltaTime * laneChangeSpeed);
         transform.position = new Vector3(newX, transform.position.y, transform.position.z);
 
-        // Zemin snap (isteğe bağlı)
-        if (isGrounded)
-        {
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, (height / 2) + 0.2f, groundLayerMask))
-            {
-                transform.position = new Vector3(transform.position.x, hit.point.y + (height / 2), transform.position.z);
-            }
-        }
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, (height / 2) + 0.1f, groundLayerMask);
+        Debug.DrawRay(transform.position, Vector3.down * ((height / 2) + 0.1f), Color.red);
     }
 
     public void Stop()
     {
         forwardSpeed = 0f;
         jumpRequested = false;
+        isChangingLane = false;
+        canMove = false;
+        // targetPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
     }
 
     public void Pause()
@@ -125,7 +123,7 @@ public class PlayerMover : MonoBehaviour, IPlayerMovement
 
     public void StartMoving()
     {
-        forwardSpeed = 15f;
+        forwardSpeed = defaultForwardSpeed; // Editörde ayarlanan hız
         canMove = true;
     }
 

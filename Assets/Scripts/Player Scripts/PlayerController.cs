@@ -34,8 +34,8 @@ public class PlayerController : MonoBehaviour
 
     public void OnGameOver()
     {
-        movement?.Stop(); // Stop hareketi
-        animationController?.HandleGameOver(); // Animasyonu oynat
+        movement?.Stop();
+        animationController?.HandleGameOver();
     }
     private void OnGamePause() => animationController?.HandleGamePause();
     private void OnGameResume() => animationController?.HandleGameResume();
@@ -83,5 +83,13 @@ public class PlayerController : MonoBehaviour
     public void SwitchToFallenCollider()
     {
         colliderSwitcher?.SwitchToFallen();
+    }
+
+    public void ResetState()
+    {
+        movement?.Stop();
+        colliderSwitcher?.SwitchToStanding();
+        transform.position = Vector3.zero;
+        StartCoroutine(StartDelay(2f));
     }
 }

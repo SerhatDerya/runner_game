@@ -26,11 +26,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float gameOverAnimationDuration = 0.25f;
     public static Action OnPlayerStartedRunning;
 
-    public static void TriggerGameOver()
-    {
-        OnGameOver?.Invoke();
-    }
-
     void Start()
     {
         int middleLane = LaneManager.instance.GetMiddleLaneIndex();
@@ -72,19 +67,20 @@ public class GameManager : MonoBehaviour
             }
 
             highScoreText.text = "Highest Score: " + highScore.ToString();
-            
+
             // Initialize game over canvas with zero scale before showing it
             gameOverCanvasContent.transform.localScale = Vector3.zero;
             gameOverCanvas.SetActive(true);
             // Add half second delay before starting animation
-            StartCoroutine((AnimateGameOverCanvas(0.3f)));           
+            StartCoroutine(AnimateGameOverCanvas(0.7f));
             InGameButtons.SetActive(false);
             Debug.Log("Game Over!");
             playerController.SwitchToFallenCollider();
             playerController.OnGameOver();
+            OnGameOver?.Invoke();
         }
     }
-    
+
     private IEnumerator AnimateGameOverCanvas(float delay)
     {
         float elapsedTime = 0f;
@@ -94,22 +90,17 @@ public class GameManager : MonoBehaviour
             // Calculate the current scale based on animation progress
             float t = elapsedTime / gameOverAnimationDuration;
             float scaleValue = Mathf.SmoothStep(0, 1, t);
-            
+
             // Apply the scale
             gameOverCanvasContent.transform.localScale = new Vector3(scaleValue, scaleValue, scaleValue);
-            
+
             // Update time
             elapsedTime += Time.unscaledDeltaTime;
             yield return null;
         }
-        
+
         // Ensure final scale is exactly 1
         gameOverCanvasContent.transform.localScale = Vector3.one;
-    }
-
-    private IEnumerator FreezeTimeAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
     }
 
     public void GamePause()
@@ -142,7 +133,8 @@ public class GameManager : MonoBehaviour
         {
             CoinManager.instance.ResetSessionCoins();
         }
-        
+
+        playerController.ResetState();
         SceneManager.LoadScene("GameScene");
         gameOverCanvas.SetActive(false);
         gamePauseCanvas.SetActive(false);
