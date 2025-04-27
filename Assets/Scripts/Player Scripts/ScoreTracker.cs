@@ -7,6 +7,7 @@ public class ScoreTracker : MonoBehaviour
     
     private Vector3 lastScoredPosition;
     private int currentScore;
+    public static event System.Action<int> OnScoreChanged;
 
     public void Init(Vector3 startPosition)
     {
@@ -31,6 +32,8 @@ public class ScoreTracker : MonoBehaviour
             {
                 ScoreManager.instance.AddScore(deltaScore);
             }
+            
+            OnScoreChanged?.Invoke(currentScore);
         }
     }
 

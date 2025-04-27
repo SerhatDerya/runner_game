@@ -2,15 +2,19 @@ using UnityEngine;
 
 public class PlayerMover : MonoBehaviour, IPlayerMovement
 {
-    private float forwardSpeed;
+    [Header("Speed Progression Settings")]
+    [SerializeField] private float speedIncreaseInterval = 100f; // her 100 puanda hız artışı
+    [SerializeField] private float speedIncreaseAmount = 0.5f;  // hız artış miktarı
+    [SerializeField] private float maxForwardSpeed = 30f;       // maksimum ileri hız
+    [SerializeField] private float forwardSpeed;
     [SerializeField] private float defaultForwardSpeed = 15f;
-    public float laneChangeSpeed = 15f;
-    public float jumpForce = 9.8f;
-    public float gravity = 9.8f;
-    public float fallGravityMultiplier = 2.5f;
-    public CapsuleCollider standingCollider;
-    public BoxCollider fallenCollider;
-    public LayerMask groundLayerMask;
+    [SerializeField] private float laneChangeSpeed = 15f;
+    [SerializeField] private float jumpForce = 9.8f;
+    [SerializeField] private float gravity = 9.8f;
+    [SerializeField] private float fallGravityMultiplier = 2.5f;
+    [SerializeField] private CapsuleCollider standingCollider;
+    [SerializeField] private BoxCollider fallenCollider;
+    [SerializeField] private LayerMask groundLayerMask;
 
     private float verticalVelocity = 0f;
     private bool jumpRequested = false;
@@ -20,6 +24,16 @@ public class PlayerMover : MonoBehaviour, IPlayerMovement
     private Vector3 targetPosition;
     private int currentLaneIndex;
     private bool isChangingLane = false;
+
+    private void OnEnable()
+    {
+        ScoreTracker.OnScoreChanged += UpdateSpeedBasedOnScore;
+    }
+
+    private void OnDisable()
+    {
+        ScoreTracker.OnScoreChanged -= UpdateSpeedBasedOnScore;
+    }
 
     private void Start()
     {
@@ -125,6 +139,16 @@ public class PlayerMover : MonoBehaviour, IPlayerMovement
     {
         forwardSpeed = defaultForwardSpeed; // Editörde ayarlanan hız
         canMove = true;
+    }
+
+    public void UpdateSpeedBasedOnScore(int score)
+    {
+        if (!canMove) return;
+
+        int intervalsPassed = Mathf.FloorToInt(score / speedIncreaseInterval);
+        float targetSpeed = defaultForwardSpeed + (intervalsPassed * speedIncreaseAmount);
+
+        forwardSpeed = Mathf.Min(targetSpeed, maxForwardSpeed);
     }
 
     private float GetCurrentHeight()
