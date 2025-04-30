@@ -2,16 +2,20 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-public class ObstacleSpawner : MonoBehaviour
+public class ObstacleSpawner : BaseSpawner<MonoBehaviour, PoolManager>
 {
     [SerializeField] private List<string> poolTags = new List<string> { "ObstacleHalf", "ObstacleFull" };
-    [SerializeField] private LaneManager laneManager;
-    [SerializeField] private float spawnChance = 0.75f;
-
-    private Queue<GameObject> activeObstacles = new();
     private Dictionary<float, int> laneObstacleCounts = new();
     private Dictionary<float, int> zPosObstacleCounts = new();
+    
+    // For compatibility with existing code
     public void SpawnObstacles(GameObject platformObj)
+    {
+        SpawnObjects(platformObj);
+    }
+    
+    // Override the abstract method from BaseSpawner
+    public override void SpawnObjects(GameObject platformObj)
     {
         if (platformObj == null)
         {
@@ -70,7 +74,7 @@ public class ObstacleSpawner : MonoBehaviour
                         float spawnHeight = platformTopY - obstacleBottomY;
                         obstacle.transform.position = new Vector3(spawnPoint.x, spawnHeight, spawnPoint.z);
                         obstacle.SetActive(true);
-                        activeObstacles.Enqueue(obstacle);
+                        activeObjects.Enqueue(obstacle);
 
                         // Platformdaki bu noktayı işaretle
                         if (!platform.IsPointOccupied(spawnPoint))
@@ -93,7 +97,14 @@ public class ObstacleSpawner : MonoBehaviour
         }
     }
 
+    // For compatibility with existing code
     public void ClearObstacles(GameObject platform)
+    {
+        ClearObjects(platform);
+    }
+    
+    // Override base method
+    public override void ClearObjects(GameObject platform)
     {
         Platform platformScript = platform.GetComponent<Platform>();
         if (platformScript != null)
@@ -104,29 +115,39 @@ public class ObstacleSpawner : MonoBehaviour
         float minZ = platform.transform.position.z - platform.transform.localScale.z / 2;
         float maxZ = platform.transform.position.z + platform.transform.localScale.z / 2;
 
-        int count = activeObstacles.Count;
+        int count = activeObjects.Count;
         for (int i = 0; i < count; i++)
         {
-            GameObject obj = activeObstacles.Dequeue();
+            GameObject obj = activeObjects.Dequeue();
             if (obj.transform.position.z >= minZ && obj.transform.position.z <= maxZ)
             {
                 obj.SetActive(false);
-                PoolManager.Instance.Return(obj);
+                ReturnObjectToPool(obj);
             }
             else
             {
-                activeObstacles.Enqueue(obj);
+                activeObjects.Enqueue(obj);
             }
         }
     }
 
+    // For compatibility with existing code
     public void ClearAllObstacles()
     {
-        while (activeObstacles.Count > 0)
-        {
-            GameObject obj = activeObstacles.Dequeue();
-            obj.SetActive(false);
-            PoolManager.Instance.Return(obj);
-        }
+        ClearObjects();
+    }
+    
+    // Need to implement this method for the abstract class
+    protected override GameObject GetObjectFromPool()
+    {
+        // Choose a random obstacle tag if none is specified
+        string selectedTag = poolTags[Random.Range(0, poolTags.Count)];
+        return PoolManager.Instance.Get(selectedTag);
+    }
+    
+    // Need to implement this method for the abstract class
+    protected override void ReturnObjectToPool(GameObject obj)
+    {
+        PoolManager.Instance.Return(obj);
     }
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class BuildingSpawner : MonoBehaviour
+public class BuildingSpawner : BaseSpawner<MonoBehaviour, PoolManager>
 {
     [SerializeField] private string buildingTag = "Building"; // Pool'dan alınacak prefab etiketi
     [SerializeField] private float buildingOffset = 3f; // Binaların platform kenarına uzaklığı
@@ -9,9 +9,19 @@ public class BuildingSpawner : MonoBehaviour
     [SerializeField] private float distanceFromEdge = 10f; // Platformun sağ ve sol kenarından uzaklık
     [SerializeField] private float minDistanceBetweenBuildings = 7f; // Binalar arasındaki minimum mesafe
     [SerializeField] private float maxXRange = 60f; // Binaların X eksenindeki geniş yayılma aralığı (Daha geniş bir range)
-    private Queue<GameObject> activeBuildings = new Queue<GameObject>();
+    
+    // Use BaseSpawner's activeObjects but keep a reference for easier reading
+    private Queue<GameObject> ActiveBuildings => activeObjects;
     private List<Vector3> spawnedPositions = new List<Vector3>(); // Çakışmayı önlemek için kullanılan pozisyon listesi
+    
+    // Existing method with the same name for compatibility
     public void SpawnBuildings(GameObject platformObj)
+    {
+        SpawnObjects(platformObj);
+    }
+
+    // Implementation of the abstract method from BaseSpawner
+    public override void SpawnObjects(GameObject platformObj)
     {
         Platform platform = platformObj.GetComponent<Platform>();
         if (platform == null)
@@ -115,7 +125,7 @@ public class BuildingSpawner : MonoBehaviour
 
     private void SpawnBuildingAt(Vector3 position)
     {
-        GameObject building = PoolManager.Instance.Get(buildingTag); // Havuzdan bina al
+        GameObject building = GetObjectFromPool();
         if (building != null)
         {
             building.transform.position = position;
@@ -131,29 +141,43 @@ public class BuildingSpawner : MonoBehaviour
         }
     }
 
+    // For existing code compatibility
     public void ClearBuildings(GameObject platform)
+    {
+        ClearObjects(platform);
+    }
+    
+    // Override the base class method
+    public override void ClearObjects(GameObject platform)
     {
         float platformMinZ = platform.transform.position.z - platform.transform.localScale.z / 2;
         float platformMaxZ = platform.transform.position.z + platform.transform.localScale.z / 2;
 
-        int count = activeBuildings.Count;
+        int count = activeObjects.Count;
         for (int i = 0; i < count; i++)
         {
-            GameObject building = activeBuildings.Dequeue();
+            GameObject building = activeObjects.Dequeue();
             if (building.transform.position.z >= platformMinZ && building.transform.position.z <= platformMaxZ)
             {
                 building.SetActive(false);
-                PoolManager.Instance.Return("Building", building); // Havuzlama mantığına göre geri döndür
+                ReturnObjectToPool(building);
             }
             else
             {
-                activeBuildings.Enqueue(building);
+                activeObjects.Enqueue(building);
             }
         }
     }
 
-    public void ReturnBuildingToPool(GameObject building)
+    // Implement abstract method from BaseSpawner
+    protected override GameObject GetObjectFromPool()
     {
-        PoolManager.Instance.Return(buildingTag, building); // Binaları havuza geri gönder
+        return PoolManager.Instance.Get(buildingTag);
+    }
+
+    // Implement abstract method from BaseSpawner
+    protected override void ReturnObjectToPool(GameObject obj)
+    {
+        PoolManager.Instance.Return(buildingTag, obj);
     }
 }

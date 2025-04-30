@@ -3,16 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
 
-public class CollectibleSpawner : MonoBehaviour
+public class CollectibleSpawner : BaseSpawner<MonoBehaviour, PoolManager>
 {
     [SerializeField] private string poolTag = "Collectible"; // Havuz etiketi
     [SerializeField] private int formationCount = 10;
     [SerializeField] private float spawnDistance = 2f;
     [SerializeField] private int coinsPerFormation = 5;
     [SerializeField] private float arcHeight = 2f;
-    [SerializeField] private LaneManager laneManager;
-    private Queue<GameObject> activeObjects = new();
+    
+    // Existing method with the same name for compatibility
     public void SpawnCollectibles(GameObject platformObj)
+    {
+        SpawnObjects(platformObj);
+    }
+    
+    // Implementation of abstract method from BaseSpawner
+    public override void SpawnObjects(GameObject platformObj)
     {
         Platform platform = platformObj.GetComponent<Platform>();
         if (platform == null)
@@ -132,7 +138,7 @@ public class CollectibleSpawner : MonoBehaviour
     {
         foreach (Vector3 pos in positions)
         {
-            GameObject collectible = PoolManager.Instance.Get(poolTag); // PoolManager'dan collectible al
+            GameObject collectible = GetObjectFromPool();
             if (collectible != null)
             {
                 collectible.transform.position = pos;
@@ -147,7 +153,14 @@ public class CollectibleSpawner : MonoBehaviour
         }
     }
 
+    // For existing code compatibility
     public void ClearCollectibles(GameObject platform)
+    {
+        ClearObjects(platform);
+    }
+    
+    // Override the base class method
+    public override void ClearObjects(GameObject platform)
     {
         if (platform == null) return;
 
@@ -167,7 +180,7 @@ public class CollectibleSpawner : MonoBehaviour
             if (obj.transform.position.z >= platformMinZ &&
                 obj.transform.position.z <= platformMaxZ)
             {
-                PoolManager.Instance.Return(obj); // Objeyi havuza geri gönder
+                ReturnObjectToPool(obj);
             }
             else
             {
@@ -176,12 +189,21 @@ public class CollectibleSpawner : MonoBehaviour
         }
     }
 
+    // For existing code compatibility
     public void ClearAllCollectibles()
     {
-        while (activeObjects.Count > 0)
-        {
-            GameObject obj = activeObjects.Dequeue();
-            PoolManager.Instance.Return(obj); // Objeyi havuza geri gönder
-        }
+        ClearObjects();
+    }
+    
+    // Implement abstract method from BaseSpawner
+    protected override GameObject GetObjectFromPool()
+    {
+        return PoolManager.Instance.Get(poolTag);
+    }
+    
+    // Implement abstract method from BaseSpawner
+    protected override void ReturnObjectToPool(GameObject obj)
+    {
+        PoolManager.Instance.Return(obj);
     }
 }
