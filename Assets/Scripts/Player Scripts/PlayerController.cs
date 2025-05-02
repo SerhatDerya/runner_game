@@ -8,7 +8,9 @@ public class PlayerController : MonoBehaviour
     private AudioManager audioManager;
     private PlayerAnimationController animationController;
     private ColliderSwitcher colliderSwitcher;
-
+    private Vector2 touchStartPos;
+    private Vector2 touchEndPos;
+    private float swipeThreshold = 50f;
     private Vector3 lastScoredPosition;
     private float distanceForScore = 1f;
 
@@ -57,20 +59,56 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        int horizontalInput = 0;
+
+        // mobil touch input kontrolü
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                touchStartPos = touch.position;
+            }
+            else if (touch.phase == TouchPhase.Ended)
+            {
+                touchEndPos = touch.position;
+                Vector2 swipe = touchEndPos - touchStartPos;
+
+                if (swipe.magnitude > swipeThreshold)
+                {
+                    if (Mathf.Abs(swipe.x) > Mathf.Abs(swipe.y))
+                    {
+                        horizontalInput = swipe.x > 0 ? 1 : -1;
+                    }
+                    else if (swipe.y > 0 && movement?.IsGrounded() == true)
+                    {
+                        movement?.Jump();
+                        audioManager?.PlaySFX(audioManager.jump);
+                    }
+                }
+            }
+        }
+
+        // pc klavye input kontrolü
+#if UNITY_EDITOR || UNITY_STANDALONE
         if (Input.GetKeyDown(KeyCode.Space) && movement?.IsGrounded() == true)
         {
-            movement?.Jump(); // sadece flag set eder
+            movement?.Jump();
             audioManager?.PlaySFX(audioManager.jump);
         }
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+            horizontalInput = -1;
+        else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+            horizontalInput = 1;
+#endif
+
         if (Vector3.Distance(transform.position, lastScoredPosition) >= distanceForScore)
         {
             scoreTracker?.TrackDistance(transform.position);
             lastScoredPosition = transform.position;
         }
-
-        int horizontalInput = 0;
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)) horizontalInput = -1;
-        else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) horizontalInput = 1;
 
         movement?.Move(horizontalInput);
     }

@@ -1,4 +1,3 @@
-// ColliderSwitcher.cs
 using UnityEngine;
 
 public class ColliderSwitcher : MonoBehaviour

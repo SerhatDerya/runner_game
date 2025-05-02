@@ -1,4 +1,3 @@
-// PlayerStateHandler.cs
 using UnityEngine;
 
 public class PlayerStateHandler : MonoBehaviour
